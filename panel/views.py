@@ -17,10 +17,37 @@ from rest_framework import status
 from core.models import Item, OrderItem, Order
 from .serializers import (
     ItemSerializer,
-    CategorySerializer
+    CategorySerializer,
+    UploadSerializer,
 )
-from core.models import Item, Category, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from core.models import Item, Upload, Category, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
+class UploadList(APIView):
+
+    def post(self, request, format=None):
+        serializer = UploadSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UploadDetail(APIView):
+    
+    def get_object(self, pk):
+        try:
+            return Upload.objects.get(pk=pk)
+        except Upload.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        upload = self.get_object(pk)
+        serializer = UploadSerializer(upload)
+        return Response(serializer.data)
+
+    def delete(self, request, pk, format=None):
+        upload = self.get_object(pk)
+        upload.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CategoryList(APIView):
    

@@ -33,10 +33,16 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+class Upload(models.Model):
+    file_path = models.ImageField(blank=True)
+
+    def __str__(self):
+        return self.file_path
+
 class Category(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField()
-    image = models.ImageField(blank=True)
+    image = models.ForeignKey(Upload, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -50,6 +56,7 @@ class Item(models.Model):
     slug = models.SlugField()
     description = models.TextField()
     image = models.ImageField()
+    images = models.ManyToManyField('Upload', through='ItemImage', related_name='items')
 
     def __str__(self):
         return self.title
@@ -69,6 +76,12 @@ class Item(models.Model):
             'slug': self.slug
         })
 
+class ItemImage(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    image = models.ForeignKey(Upload, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.item.title
 
 class Variation(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
