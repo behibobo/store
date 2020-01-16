@@ -39,10 +39,20 @@ class Upload(models.Model):
     def __str__(self):
         return self.file_path
 
+class Brand(models.Model):
+    name = models.CharField(max_length=150)
+    slug = models.SlugField()
+    image = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name
+
 class Category(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField()
-    image = models.ForeignKey(Upload, on_delete=models.CASCADE)
+    image = models.CharField(max_length=300)
+    parent_id = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE)
+
 
     def __str__(self):
         return self.name
@@ -56,7 +66,6 @@ class Item(models.Model):
     slug = models.SlugField()
     description = models.TextField()
     image = models.ImageField()
-    images = models.ManyToManyField('Upload', through='ItemImage', related_name='items')
 
     def __str__(self):
         return self.title
@@ -78,7 +87,7 @@ class Item(models.Model):
 
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    image = models.ForeignKey(Upload, on_delete=models.CASCADE)
+    image = models.CharField(max_length=300)
     
     def __str__(self):
         return self.item.title
