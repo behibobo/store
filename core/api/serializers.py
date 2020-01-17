@@ -1,10 +1,18 @@
 from django_countries.serializer_fields import CountryField
+from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from core.models import (
-    Address,Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Address, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
     Payment
 )
 
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+            model = UserProfile
+            fields = ('username', 'status')
+            read_only_fields = ('email',)
 
 class StringSerializer(serializers.StringRelatedField):
     def to_internal_value(self, value):

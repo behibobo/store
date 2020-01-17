@@ -53,7 +53,7 @@ class UploadDetail(APIView):
 class CategoryList(APIView):
    
     def get(self, request, format=None):
-        categories = Category.objects.filter(parent__isnull=True).order_by('order')
+        categories = Category.objects.filter(display=True).filter(parent__isnull=True).order_by('order')
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
@@ -95,7 +95,7 @@ class CategoryDetail(APIView):
 class BrandList(APIView):
    
     def get(self, request, format=None):
-        brands = Brand.objects.all()
+        brands = Brand.objects.filter(display=True)
         serializer = BrandSerializer(brands, many=True)
         return Response(serializer.data)
 

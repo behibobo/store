@@ -45,6 +45,7 @@ class BrandSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'slug',
+            'display',
             'image'
         )
 
@@ -62,6 +63,7 @@ class CategorySerializer(serializers.ModelSerializer):
             'order',
             'name',
             'slug',
+            'display',
             'image',
             'children'
         )
