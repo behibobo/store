@@ -53,7 +53,7 @@ class UploadDetail(APIView):
 class CategoryList(APIView):
    
     def get(self, request, format=None):
-        categories = Category.objects.all()
+        categories = Category.objects.filter(parent__isnull=True).order_by('order')
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 

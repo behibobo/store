@@ -50,8 +50,9 @@ class Brand(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField()
+    order = models.IntegerField(default=1)
     image = models.CharField(max_length=300)
-    parent_id = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE, related_name="children")
+    parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE, related_name="children")
 
 
     def __str__(self):

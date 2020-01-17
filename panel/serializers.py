@@ -48,13 +48,18 @@ class BrandSerializer(serializers.ModelSerializer):
             'image'
         )
 
+class RecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
 
 class CategorySerializer(serializers.ModelSerializer):
-    children = serializers.ReadOnlyField(many=True, read_only=True)
+    children = RecursiveField(many=True)
     class Meta:
         model = Category
         fields = (
             'id',
+            'order',
             'name',
             'slug',
             'image',
