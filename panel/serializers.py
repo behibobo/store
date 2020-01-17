@@ -48,14 +48,17 @@ class BrandSerializer(serializers.ModelSerializer):
             'image'
         )
 
+
 class CategorySerializer(serializers.ModelSerializer):
+    children = serializers.ReadOnlyField(many=True, read_only=True)
     class Meta:
         model = Category
         fields = (
             'id',
             'name',
             'slug',
-            'image'
+            'image',
+            'children'
         )
 
 

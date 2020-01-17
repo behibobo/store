@@ -51,7 +51,7 @@ class Category(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField()
     image = models.CharField(max_length=300)
-    parent_id = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE)
+    parent_id = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE, related_name="children")
 
 
     def __str__(self):
