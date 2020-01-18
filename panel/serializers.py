@@ -55,7 +55,7 @@ class RecursiveField(serializers.Serializer):
         return serializer.data
 
 class CategorySerializer(serializers.ModelSerializer):
-    children = RecursiveField(many=True)
+    children = RecursiveField(many=True, read_only= True)
     class Meta:
         model = Category
         fields = (
@@ -64,6 +64,7 @@ class CategorySerializer(serializers.ModelSerializer):
             'name',
             'slug',
             'display',
+            'parent',
             'image',
             'children'
         )
