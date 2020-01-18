@@ -1,7 +1,7 @@
 from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
-    Address, Upload, Brand, Category, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Address, Upload, Option, Brand, Category, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
     Payment
 )
 
@@ -36,6 +36,14 @@ class UploadSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'file_path'
+        )
+
+class OprtionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Upload
+        fields = (
+            'id',
+            'name'
         )
 
 class BrandSerializer(serializers.ModelSerializer):

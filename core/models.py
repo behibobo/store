@@ -38,6 +38,12 @@ class Upload(models.Model):
     def __str__(self):
         return self.file_path
 
+class Option(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
 class Brand(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField()
@@ -60,13 +66,9 @@ class Category(models.Model):
 
 class Item(models.Model):
     name = models.CharField(max_length=150)
-    price = models.FloatField()
-    discount_price = models.FloatField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
-    label = models.CharField(choices=LABEL_CHOICES, max_length=1)
     slug = models.SlugField()
     description = models.TextField()
-    image = models.ImageField()
 
     def __str__(self):
         return self.name
@@ -108,7 +110,7 @@ class Variation(models.Model):
 
 class ItemVariation(models.Model):
     variation = models.ForeignKey(Variation, on_delete=models.CASCADE)
-    value = models.CharField(max_length=50)  # S, M, L
+    value = models.CharField(max_length=150)
     attachment = models.ImageField(blank=True)
 
     class Meta:
