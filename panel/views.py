@@ -24,7 +24,6 @@ from .serializers import (
 from core.models import Item, Upload, Category, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
 class UploadList(APIView):
-
     def post(self, request, format=None):
         serializer = UploadSerializer(data=request.data)
         if serializer.is_valid():
