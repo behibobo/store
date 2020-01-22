@@ -212,7 +212,7 @@ class PaymentView(APIView):
         except stripe.error.CardError as e:
             body = e.json_body
             err = body.get('error', {})
-            return Response({"message": f"{err.get('message')}"}, status=HTTP_400_BAD_REQUEST)
+            return Response({"message": "{}".format(err.get('message'))}, status=HTTP_400_BAD_REQUEST)
 
         except stripe.error.RateLimitError as e:
             # Too many requests made to the API too quickly
