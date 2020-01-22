@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from core.models import (
-    Address, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Address, ItemImage, Category, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
     Payment
 )
 
@@ -35,34 +35,43 @@ class UploadSerializer(serializers.ModelSerializer):
             'id',
             'file_path'
         )
+class ItemImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemImage
+        fields = (
+            'id',
+            'image'
+        )
+
+class SingleCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'name',
+            'slug',
+            'image'
+        )
 
 class ItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
-    label = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     class Meta:
         model = Item
         fields = (
             'id',
-            'title',
-            'price',
-            'discount_price',
+            'name',
             'category',
-            'label',
             'slug',
             'description',
-            'image',
             'images'
         )
 
     def get_category(self, obj):
-        return obj.get_category_display()
-
-    def get_label(self, obj):
-        return obj.get_label_display()
-
+        return SingleCategorySerializer(obj.category).data
+    
     def get_images(self, obj):
-        return UploadSerializer(obj.images.all(), many=True).data
+        return ItemImageSerializer(obj.images.all(), many=True).data
 
 class VariationDetailSerializer(serializers.ModelSerializer):
     item = serializers.SerializerMethodField()

@@ -66,7 +66,8 @@ class Category(models.Model):
 
 class Item(models.Model):
     name = models.CharField(max_length=150)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products",)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products",)
     slug = models.SlugField()
     description = models.TextField()
 
@@ -89,11 +90,11 @@ class Item(models.Model):
         })
 
 class ItemImage(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='images')
     image = models.CharField(max_length=300)
     
     def __str__(self):
-        return self.item.title
+        return self.item.name
 
 class Variation(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)

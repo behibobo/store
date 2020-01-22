@@ -1,34 +1,11 @@
 from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
-    Address, Upload, Option, Brand, Category, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Address, Upload, Option, Brand, Category, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
     Payment
 )
 
 
-class ItemSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField()
-    label = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Item
-        fields = (
-            'id',
-            'title',
-            'price',
-            'discount_price',
-            'category',
-            'label',
-            'slug',
-            'description',
-            'image'
-        )
-
-    def get_category(self, obj):
-        return obj.get_category_display()
-
-    def get_label(self, obj):
-        return obj.get_label_display()
 
 class UploadSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,9 +15,17 @@ class UploadSerializer(serializers.ModelSerializer):
             'file_path'
         )
 
-class OprtionSerializer(serializers.ModelSerializer):
+class ItemImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Upload
+        model = ItemImage
+        fields = (
+            'id',
+            'image'
+        )
+
+class OptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Option
         fields = (
             'id',
             'name'
@@ -77,5 +62,41 @@ class CategorySerializer(serializers.ModelSerializer):
             'children'
         )
 
+class SingleCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'name',
+            'slug',
+            'image'
+        )
 
+class ItemSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField(read_only=True)
+    category_id = serializers.IntegerField()
+    brand_id = serializers.IntegerField()
+    class Meta:
+        model = Item
+        fields = (
+            'id',
+            'name',
+            'category',
+            'category_id',
+            'brand',
+            'brand_id',
+            'slug',
+            'description',
+            'images'
+        )
 
+    def get_category(self, obj):
+        return SingleCategorySerializer(obj.category).data
+    
+    def get_brand(self, obj):
+        return BrandSerializer(obj.brand).data
+    
+    def get_images(self, obj):
+        return ItemImageSerializer(obj.images.all(), many=True).data
