@@ -132,7 +132,7 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
-        return f"{self.quantity} of {self.item.title}"
+        return "{} of {}".format(self.quantity, self.item.name)
 
     def get_total_item_price(self):
         return self.quantity * self.item.price
@@ -236,7 +236,7 @@ class Refund(models.Model):
     email = models.EmailField()
 
     def __str__(self):
-        return f"{self.pk}"
+        return self.pk
 
 
 def userprofile_receiver(sender, instance, created, *args, **kwargs):
