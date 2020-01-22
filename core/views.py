@@ -301,7 +301,7 @@ class PaymentView(View):
             except stripe.error.CardError as e:
                 body = e.json_body
                 err = body.get('error', {})
-                messages.warning(self.request, f"{err.get('message')}")
+                messages.warning(self.request, "{}".format(err.get('message')))
                 return redirect("/")
 
             except stripe.error.RateLimitError as e:
