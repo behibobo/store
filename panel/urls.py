@@ -6,11 +6,16 @@ from .views import (
     CategoryList,
     UploadDetail,
     UploadList,
+    ItemUploadList,
     BrandDetail,
-    BrandList
+    BrandList,
+    OptionList,
+    OptionDetail,
 )
 
 urlpatterns = [
+    path('options/', OptionList.as_view(), name='admin-option'),
+    path('options/<int:pk>/', OptionDetail.as_view(), name='admin-option-get'),
     path('categories/', CategoryList.as_view(), name='admin-category'),
     path('categories/<int:pk>/', CategoryDetail.as_view(), name='admin-category-get'),
     path('products/', ItemList.as_view(), name='admin-items'),
@@ -18,5 +23,6 @@ urlpatterns = [
     path('brands/', BrandList.as_view(), name='admin-brand'),
     path('brands/<int:pk>/', BrandDetail.as_view(), name='admin-brand-get'),
     path('uploads/', UploadList.as_view(), name='admin-upload'),
+    path('products/<int:pk>/uploads/', ItemUploadList.as_view(), name='admin-upload'),
     path('uploads/<int:pk>/', UploadDetail.as_view(), name='admin-upload-get'),
 ]

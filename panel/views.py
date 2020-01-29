@@ -20,9 +20,10 @@ from .serializers import (
     SingleCategorySerializer,
     UploadSerializer,
     BrandSerializer,
-    ItemImageSerializer,
+    ItemImagesSerializer,
+    OptionSerializer,
 )
-from core.models import Item, Brand, ItemImage, Upload, Category, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from core.models import Item, Brand, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
 class UploadList(APIView):
     def post(self, request, format=None):
@@ -31,6 +32,32 @@ class UploadList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ItemUploadList(APIView):
+    def post(self, request, pk, format=None):
+        images = dict((request.data).lists())['file_path']
+        flag = 1
+        arr = []
+        for img_name in images:
+            modified_data = modify_input_for_multiple_files(img_name)
+            file_serializer = UploadSerializer(data=modified_data)
+            if file_serializer.is_valid():
+                file_serializer.save()
+                im = ItemImage(item_id=pk, image=file_serializer.data['file_path'])
+                im.save()
+                arr.append(file_serializer.data)
+            else:
+                flag = 0
+
+        if flag == 1:
+            return Response(arr, status=status.HTTP_201_CREATED)
+        else:
+            return Response(arr, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk, format=None):
+        item = Item.objects.get(pk=pk)
+        serializer = ItemImagesSerializer(item)
+        return Response(serializer.data)
 
 class UploadDetail(APIView):
     
@@ -51,7 +78,6 @@ class UploadDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CategoryList(APIView):
-   
     def get(self, request, format=None):
         categories = Category.objects.filter(display=True).filter(parent__isnull=True).order_by('order')
         serializer = CategorySerializer(categories, many=True)
@@ -63,6 +89,8 @@ class CategoryList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class CategoryDetail(APIView):
     
@@ -180,3 +208,48 @@ class ItemDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class OptionList(APIView):
+
+    def get(self, request, format=None):
+        options = Option.objects.all()
+        serializer = OptionSerializer(options, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = OptionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OptionDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return Option.objects.get(pk=pk)
+        except Option.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        option = self.get_object(pk)
+        serializer = OptionSerializer(option)
+        return Response(serializer.data)
+
+
+    def put(self, request, pk, format=None):
+        option = self.get_object(pk)
+        serializer = OptionSerializer(option, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        option = self.get_object(pk)
+        option.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+def modify_input_for_multiple_files(image):
+    dict = {}
+    dict['file_path'] = image
+    return dict

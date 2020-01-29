@@ -40,7 +40,6 @@ class Upload(models.Model):
 
 class Option(models.Model):
     name = models.CharField(max_length=150)
-
     def __str__(self):
         return self.name
 
@@ -97,16 +96,20 @@ class ItemImage(models.Model):
         return self.item.name
 
 class Variation(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)  # size
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='variations')
+    stock = models.IntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True,)
+    reduced_price = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True,)
+    option_one = models.CharField(max_length=150,blank=True, null=True,)
+    value_one = models.CharField(max_length=150,blank=True, null=True,)
+    option_two = models.CharField(max_length=150,blank=True, null=True,)
+    value_two = models.CharField(max_length=150,blank=True, null=True,)
+    option_three = models.CharField(max_length=150,blank=True, null=True,)
+    value_three = models.CharField(max_length=150,blank=True, null=True,)
 
-    class Meta:
-        unique_together = (
-            ('item', 'name')
-        )
 
     def __str__(self):
-        return self.name
+        return self.id
 
 
 class ItemVariation(models.Model):

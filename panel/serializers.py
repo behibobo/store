@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Brand, Category, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment
+    Payment, Variation
 )
 
 
@@ -15,11 +15,13 @@ class UploadSerializer(serializers.ModelSerializer):
             'file_path'
         )
 
+
 class ItemImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemImage
         fields = (
             'id',
+            'item_id',
             'image'
         )
 
@@ -76,6 +78,7 @@ class ItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     brand = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField(read_only=True)
+    variations = serializers.SerializerMethodField()
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
     class Meta:
@@ -89,7 +92,8 @@ class ItemSerializer(serializers.ModelSerializer):
             'brand_id',
             'slug',
             'description',
-            'images'
+            'images',
+            'variations'
         )
 
     def get_category(self, obj):
@@ -100,3 +104,37 @@ class ItemSerializer(serializers.ModelSerializer):
     
     def get_images(self, obj):
         return ItemImageSerializer(obj.images.all(), many=True).data
+
+    def get_variations(self, obj):
+        return VariationSerializer(obj.variations.all(), many=True).data
+
+class ItemImagesSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Item
+        fields = (
+            'images',
+        )
+
+    def get_images(self, obj):
+        return ItemImageSerializer(obj.images.all(), many=True).data
+
+class VariationSerializer(serializers.ModelSerializer):
+    item_id = serializers.IntegerField()
+    class Meta:
+        model = Variation
+        fields = (
+            'id',
+            'item_id',
+            'stock',
+            'price',
+            'reduced_price',
+            'option_one',
+            'value_one',
+            'option_two',
+            'value_two',
+            'option_three',
+            'value_three',
+        )
+
+    
