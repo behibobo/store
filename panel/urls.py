@@ -11,6 +11,7 @@ from .views import (
     BrandList,
     OptionList,
     OptionDetail,
+    VariationList,
 )
 
 urlpatterns = [
@@ -20,6 +21,7 @@ urlpatterns = [
     path('categories/<int:pk>/', CategoryDetail.as_view(), name='admin-category-get'),
     path('products/', ItemList.as_view(), name='admin-items'),
     path('products/<int:pk>/', ItemDetail.as_view(), name='admin-item-get'),
+    path('products/<int:pk>/variations/', VariationList.as_view(), name='admin-product-variations-get'),
     path('brands/', BrandList.as_view(), name='admin-brand'),
     path('brands/<int:pk>/', BrandDetail.as_view(), name='admin-brand-get'),
     path('uploads/', UploadList.as_view(), name='admin-upload'),

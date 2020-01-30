@@ -22,6 +22,7 @@ from .serializers import (
     BrandSerializer,
     ItemImagesSerializer,
     OptionSerializer,
+    VariationSerializer,
 )
 from core.models import Item, Brand, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
@@ -206,6 +207,23 @@ class ItemDetail(APIView):
         item = self.get_object(pk)
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class VariationList(APIView):
+
+    def get(self, request, pk, format=None):
+        variations = Variation.objects.filter(item_id=pk)
+        serializer = VariationSerializer(variations, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = VariationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class OptionList(APIView):
