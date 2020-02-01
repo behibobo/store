@@ -253,8 +253,8 @@ class VariationDetail(APIView):
 
 class OptionList(APIView):
 
-    def get(self, request, format=None):
-        options = Option.objects.all()
+    def get(self, request, format=None, *args, **kwagrs):
+        options = Option.objects.filter(name__startswith=request.query_params.get('keyword', ""))
         serializer = OptionSerializer(options, many=True)
         return Response(serializer.data)
 
