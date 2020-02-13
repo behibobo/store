@@ -1,8 +1,8 @@
 from django.urls import path
 from .views import (
     UserIDView,
-    ItemListView,
-    ItemDetailView,
+    ItemDetail,
+    ItemList,
     AddToCartView,
     OrderDetailView,
     OrderQuantityUpdateView,
@@ -14,7 +14,11 @@ from .views import (
     AddressUpdateView,
     AddressDeleteView,
     OrderItemDeleteView,
-    PaymentListView
+    PaymentListView,
+    CategoryList,
+    CategoryDetail,
+    BrandList,
+    BrandDetail
 )
 
 urlpatterns = [
@@ -26,8 +30,13 @@ urlpatterns = [
          AddressUpdateView.as_view(), name='address-update'),
     path('addresses/<pk>/delete/',
          AddressDeleteView.as_view(), name='address-delete'),
-    path('products/', ItemListView.as_view(), name='product-list'),
-    path('products/<pk>/', ItemDetailView.as_view(), name='product-detail'),
+    path('products/', ItemList.as_view(), name='product-list'),
+    path('products/<str:slug>/', ItemDetail.as_view(), name='product-detail'),
+    path('categories/', CategoryList.as_view(), name='category'),
+    path('categories/<str:slug>/', CategoryDetail.as_view(), name='category-get'),
+    path('brands/', BrandList.as_view(), name='category'),
+    path('brands/<str:slug>/', BrandDetail.as_view(), name='category-get'),
+    
     path('add-to-cart/', AddToCartView.as_view(), name='add-to-cart'),
     path('order-summary/', OrderDetailView.as_view(), name='order-summary'),
     path('checkout/', PaymentView.as_view(), name='checkout'),

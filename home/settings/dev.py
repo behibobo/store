@@ -13,10 +13,12 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'http://192.168.1.103:3000',
+#     'http://192.168.1.103:3003',
+# )
 
 # Stripe
 

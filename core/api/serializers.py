@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from core.models import (
-    Address, ItemImage, Category, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Address, ItemImage, Category, Option, Brand, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
     Payment
 )
 
@@ -53,56 +53,97 @@ class SingleCategorySerializer(serializers.ModelSerializer):
             'image'
         )
 
+class SingleCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'name',
+            'slug',
+            'image'
+        )
+
+class OptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Option
+        fields = (
+            'id',
+            'name'
+        )
+
+class BrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = (
+            'id',
+            'name',
+            'slug',
+            'display',
+            'image'
+        )
+
 class ItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
-    images = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField(read_only=True)
+    variations = serializers.SerializerMethodField()
+    category_id = serializers.IntegerField()
+    brand_id = serializers.IntegerField()
     class Meta:
         model = Item
         fields = (
             'id',
             'name',
             'category',
+            'category_id',
+            'brand',
+            'brand_id',
             'slug',
             'description',
-            'images'
+            'images',
+            'variations'
         )
 
     def get_category(self, obj):
         return SingleCategorySerializer(obj.category).data
     
+    def get_brand(self, obj):
+        return BrandSerializer(obj.brand).data
+    
     def get_images(self, obj):
         return ItemImageSerializer(obj.images.all(), many=True).data
 
-class VariationDetailSerializer(serializers.ModelSerializer):
-    item = serializers.SerializerMethodField()
+    def get_variations(self, obj):
+        return VariationSerializer(obj.variations.all(), many=True).data
 
+class ItemImagesSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Item
+        fields = (
+            'images',
+        )
+
+    def get_images(self, obj):
+        return ItemImageSerializer(obj.images.all().order_by('order'), many=True).data
+
+class VariationSerializer(serializers.ModelSerializer):
+    item_id = serializers.IntegerField()
     class Meta:
         model = Variation
         fields = (
             'id',
-            'name',
-            'item'
+            'item_id',
+            'stock',
+            'price',
+            'reduced_price',
+            'option_one',
+            'value_one',
+            'option_two',
+            'value_two',
+            'option_three',
+            'value_three',
         )
-
-    def get_item(self, obj):
-        return ItemSerializer(obj.item).data
-
-
-class ItemVariationDetailSerializer(serializers.ModelSerializer):
-    variation = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ItemVariation
-        fields = (
-            'id',
-            'value',
-            'attachment',
-            'variation'
-        )
-
-    def get_variation(self, obj):
-        return VariationDetailSerializer(obj.variation).data
-
 
 class OrderItemSerializer(serializers.ModelSerializer):
     item_variations = serializers.SerializerMethodField()
@@ -165,21 +206,6 @@ class ItemVariationSerializer(serializers.ModelSerializer):
         )
 
 
-class VariationSerializer(serializers.ModelSerializer):
-    item_variations = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Variation
-        fields = (
-            'id',
-            'name',
-            'item_variations'
-        )
-
-    def get_item_variations(self, obj):
-        return ItemVariationSerializer(obj.itemvariation_set.all(), many=True).data
-
-
 class ItemDetailSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     label = serializers.SerializerMethodField()
@@ -234,4 +260,24 @@ class PaymentSerializer(serializers.ModelSerializer):
             'id',
             'amount',
             'timestamp'
+        )
+
+class RecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+class CategorySerializer(serializers.ModelSerializer):
+    children = RecursiveField(many=True, read_only= True)
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'order',
+            'name',
+            'slug',
+            'display',
+            'parent',
+            'image',
+            'children'
         )

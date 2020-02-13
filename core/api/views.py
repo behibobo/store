@@ -13,10 +13,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from core.models import Item, OrderItem, Order
+from core.models import Item, OrderItem, Order,Category, Brand
 from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
-    PaymentSerializer
+    PaymentSerializer, CategorySerializer, BrandSerializer
 )
 from core.models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
@@ -31,16 +31,19 @@ class UserIDView(APIView):
         return Response({'userID': request.user.id}, status=HTTP_200_OK)
 
 
-class ItemListView(ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = ItemSerializer
-    queryset = Item.objects.all()
+class ItemList(APIView):
+    def get(self, request, format=None):
+        permission_classes = (IsAuthenticated, )
+        items = Item.objects.all()
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
 
-
-class ItemDetailView(RetrieveAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = ItemDetailSerializer
-    queryset = Item.objects.all()
+class ItemDetail(APIView):
+    def get(self, request, slug, format=None):
+        permission_classes = (IsAuthenticated, )
+        items = Item.objects.filter(slug=slug)
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
 
 
 class OrderQuantityUpdateView(APIView):
@@ -298,3 +301,32 @@ class PaymentListView(ListAPIView):
 
     def get_queryset(self):
         return Payment.objects.filter(user=self.request.user)
+
+
+class CategoryList(APIView):
+    def get(self, request, format=None):
+        permission_classes = (IsAuthenticated, )
+        categories = Category.objects.filter(display=True).filter(parent__isnull=True).order_by('order')
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+class CategoryDetail(APIView):
+    def get(self, request, slug, format=None):
+        permission_classes = (IsAuthenticated, )
+        items = Item.objects.filter(category__slug=slug)
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
+
+class BrandList(APIView):
+    def get(self, request, format=None):
+        permission_classes = (IsAuthenticated, )
+        brands = Brand.objects.all()
+        serializer = BrandSerializer(brands, many=True)
+        return Response(serializer.data)
+
+class BrandDetail(APIView):
+    def get(self, request, slug, format=None):
+        permission_classes = (IsAuthenticated, )
+        items = Item.objects.filter(brand__slug=slug)
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
