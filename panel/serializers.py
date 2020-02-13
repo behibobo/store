@@ -22,6 +22,7 @@ class ItemImageSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'item_id',
+            'order',
             'image'
         )
 
@@ -117,7 +118,7 @@ class ItemImagesSerializer(serializers.ModelSerializer):
         )
 
     def get_images(self, obj):
-        return ItemImageSerializer(obj.images.all(), many=True).data
+        return ItemImageSerializer(obj.images.all().order_by('order'), many=True).data
 
 class VariationSerializer(serializers.ModelSerializer):
     item_id = serializers.IntegerField()

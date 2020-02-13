@@ -43,6 +43,16 @@ class Option(models.Model):
     def __str__(self):
         return self.name
 
+class Seo(models.Model):
+    item_id = models.PositiveIntegerField()
+    title = models.CharField(max_length=150, blank=True, null=True)
+    keywords = models.CharField(max_length=1000, blank=True, null=True)
+    description = models.CharField(max_length=400, blank=True, null=True)
+    extra = models.CharField(max_length=1000, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
 class Brand(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField()
@@ -91,6 +101,7 @@ class Item(models.Model):
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='images')
     image = models.CharField(max_length=300)
+    order = models.IntegerField(default=1)
     
     def __str__(self):
         return self.item.name

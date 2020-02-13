@@ -1,5 +1,6 @@
 from django_countries import countries
 from django.db.models import Q
+from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
@@ -24,7 +25,7 @@ from .serializers import (
     OptionSerializer,
     VariationSerializer,
 )
-from core.models import Item, Brand, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from core.models import Item, Brand, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
 class UploadList(APIView):
     def post(self, request, format=None):
@@ -59,6 +60,21 @@ class ItemUploadList(APIView):
         item = Item.objects.get(pk=pk)
         serializer = ItemImagesSerializer(item)
         return Response(serializer.data)
+
+class UploadSort(APIView):
+    def post(self, request, pk, format=None):
+        uploads = request.data
+        data = uploads["uploads"]
+        for index, item in enumerate(data):
+            image = ItemImage.objects.get(pk=item)
+            image.order = index
+            image.save()
+        product = Item.objects.get(pk=pk)
+        serializer = ItemImagesSerializer(product)
+        return Response(serializer.data)
+
+
+    
 
 class UploadDetail(APIView):
     
@@ -264,6 +280,21 @@ class OptionList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ValueList(APIView):
+    def get(self, request, format=None, *args, **kwagrs):
+        values = Variation.objects.all().values('value_one', 'value_two', 'value_three')
+        data = []
+        for item in values:
+            if item['value_one'] not in data and item['value_one'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['value_one'])
+            if item['value_two'] not in data and item['value_two'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['value_two'])
+            if item['value_three'] not in data and item['value_three'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['value_three'])
+
+        return JsonResponse(data, safe=False)
+
 
 class OptionDetail(APIView):
 
