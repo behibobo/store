@@ -327,8 +327,7 @@ class CategoryDetail(ListAPIView):
     serializer_class = ItemSerializer
     pagination_class = StandardResultsSetPagination
 
-    queryset = Item.objects.all() 
-    def get_object(self): 
+    def get_queryset(self,  *args, **kwargs):
         return Item.objects.filter(category__slug=self.kwargs.get('slug'))
         
     
@@ -341,19 +340,12 @@ class BrandList(APIView):
         serializer = BrandSerializer(brands, many=True)
         return Response(serializer.data)
 
-class BrandDetail(APIView):
-    def get(self, request, slug, format=None):
-        permission_classes = (IsAuthenticated, )
-        items = Item.objects.filter(brand__slug=slug)
-        serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
 
 class BrandDetail(ListAPIView):
     serializer_class = ItemSerializer
     pagination_class = StandardResultsSetPagination
 
-    queryset = Item.objects.all() 
-    def get_object(self): 
+    def get_queryset(self,  *args, **kwargs):
         return Item.objects.filter(brand__slug=self.kwargs.get('slug'))
 
 
@@ -373,5 +365,5 @@ class KeywordSearch(ListAPIView):
         items =  Item.objects.filter(name__contains=self.request.query_params.get('keyword', ''))
         if 'slug' in self.request.query_params:
             items = items.filter(category__slug=self.request.query_params.get('slug', ''))
-        return items
+        return items[:int(self.request.query_params.get('limit', 10))]
 
