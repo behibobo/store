@@ -9,6 +9,8 @@ from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView
 )
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,7 +18,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from core.models import Item, OrderItem, Order,Category, Brand
 from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
-    PaymentSerializer, CategorySerializer, BrandSerializer
+    PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer
 )
 from core.models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
@@ -31,18 +33,26 @@ class UserIDView(APIView):
         return Response({'userID': request.user.id}, status=HTTP_200_OK)
 
 
-class ItemList(APIView):
-    def get(self, request, format=None):
-        permission_classes = (IsAuthenticated, )
-        items = Item.objects.all()
-        serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
+# class ItemList(APIView):
+#     def get(self, request, format=None):
+#         permission_classes = (IsAuthenticated, )
+#         items = Item.objects.all()
+#         paginator = PageNumberPagination()
+#         serializer = ItemSerializer(items, many=True)
+#         return Response(serializer.data)
+
+
+class ItemList(ListAPIView):
+    serializer_class = ItemSerializer
+    queryset = Item.objects.all()
+    pagination_class = PageNumberPagination
+    
 
 class ItemDetail(APIView):
     def get(self, request, slug, format=None):
         permission_classes = (IsAuthenticated, )
-        items = Item.objects.filter(slug=slug)
-        serializer = ItemSerializer(items, many=True)
+        items = Item.objects.get(slug=slug)
+        serializer = SingleItemSerializer(items)
         return Response(serializer.data)
 
 
@@ -310,12 +320,19 @@ class CategoryList(APIView):
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
-class CategoryDetail(APIView):
-    def get(self, request, slug, format=None):
-        permission_classes = (IsAuthenticated, )
-        items = Item.objects.filter(category__slug=slug)
-        serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
+
+class CategoryDetail(ListAPIView):
+    serializer_class = ItemSerializer
+    pagination_class = StandardResultsSetPagination
+
+    queryset = Item.objects.all() 
+    def get_object(self): 
+        return Item.objects.filter(category__slug=self.kwargs.get('slug'))
+        
+    
+
 
 class BrandList(APIView):
     def get(self, request, format=None):
@@ -330,3 +347,31 @@ class BrandDetail(APIView):
         items = Item.objects.filter(brand__slug=slug)
         serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
+
+class BrandDetail(ListAPIView):
+    serializer_class = ItemSerializer
+    pagination_class = StandardResultsSetPagination
+
+    queryset = Item.objects.all() 
+    def get_object(self): 
+        return Item.objects.filter(brand__slug=self.kwargs.get('slug'))
+
+
+class Search(ListAPIView):
+    serializer_class = ItemSerializer
+    pagination_class = StandardResultsSetPagination
+    def get_queryset(self,  *args, **kwargs):
+        items =  Item.objects.filter(name__contains=self.request.query_params.get('keyword', ''))
+        if 'slug' in self.request.query_params:
+            items = items.filter(category__slug=self.request.query_params.get('slug', ''))
+        return items
+
+
+class KeywordSearch(ListAPIView):
+    serializer_class = ItemSerializer
+    def get_queryset(self,  *args, **kwargs):
+        items =  Item.objects.filter(name__contains=self.request.query_params.get('keyword', ''))
+        if 'slug' in self.request.query_params:
+            items = items.filter(category__slug=self.request.query_params.get('slug', ''))
+        return items
+

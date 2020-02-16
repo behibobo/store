@@ -85,6 +85,37 @@ class BrandSerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     brand = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField(read_only=True)
+    category_id = serializers.IntegerField()
+    brand_id = serializers.IntegerField()
+    class Meta:
+        model = Item
+        fields = (
+            'id',
+            'name',
+            'category',
+            'category_id',
+            'brand',
+            'brand_id',
+            'slug',
+            'description',
+            'image',
+        )
+
+    def get_category(self, obj):
+        return SingleCategorySerializer(obj.category).data
+    
+    def get_brand(self, obj):
+        return BrandSerializer(obj.brand).data
+    
+    def get_image(self, obj):
+        return ItemImageSerializer(obj.images.order_by('order').first()).data
+
+
+
+class SingleItemSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField(read_only=True)
     variations = serializers.SerializerMethodField()
     category_id = serializers.IntegerField()
@@ -111,10 +142,11 @@ class ItemSerializer(serializers.ModelSerializer):
         return BrandSerializer(obj.brand).data
     
     def get_images(self, obj):
-        return ItemImageSerializer(obj.images.all(), many=True).data
+        return ItemImageSerializer(obj.images.order_by('order').all(), many=True).data
 
     def get_variations(self, obj):
         return VariationSerializer(obj.variations.all(), many=True).data
+
 
 class ItemImagesSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField(read_only=True)

@@ -18,7 +18,9 @@ from .views import (
     CategoryList,
     CategoryDetail,
     BrandList,
-    BrandDetail
+    BrandDetail,
+    Search,
+    KeywordSearch
 )
 
 urlpatterns = [
@@ -36,7 +38,8 @@ urlpatterns = [
     path('categories/<str:slug>/', CategoryDetail.as_view(), name='category-get'),
     path('brands/', BrandList.as_view(), name='category'),
     path('brands/<str:slug>/', BrandDetail.as_view(), name='category-get'),
-    
+    path('search/', Search.as_view(), name='search-get'),
+    path('keywordsearch/', KeywordSearch.as_view(), name='keyword-search-get'),
     path('add-to-cart/', AddToCartView.as_view(), name='add-to-cart'),
     path('order-summary/', OrderDetailView.as_view(), name='order-summary'),
     path('checkout/', PaymentView.as_view(), name='checkout'),
