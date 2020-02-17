@@ -117,7 +117,7 @@ class Variation(models.Model):
     value_two = models.CharField(max_length=150,blank=True, null=True,)
     option_three = models.CharField(max_length=150,blank=True, null=True,)
     value_three = models.CharField(max_length=150,blank=True, null=True,)
-
+    main = models.BooleanField(default=False)
 
     def __str__(self):
         return self.id
