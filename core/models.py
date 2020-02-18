@@ -102,7 +102,7 @@ class ItemImage(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='images')
     image = models.CharField(max_length=300)
     order = models.IntegerField(default=1)
-    
+
     def __str__(self):
         return self.item.name
 
@@ -117,10 +117,14 @@ class Variation(models.Model):
     value_two = models.CharField(max_length=150,blank=True, null=True,)
     option_three = models.CharField(max_length=150,blank=True, null=True,)
     value_three = models.CharField(max_length=150,blank=True, null=True,)
-    main = models.BooleanField(default=False)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.id
+
+class Wishlist(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='items')
+
 
 
 class ItemVariation(models.Model):

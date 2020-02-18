@@ -20,7 +20,7 @@ from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
     PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer
 )
-from core.models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from core.models import Item, Wishlist, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
 
 import stripe
@@ -46,7 +46,7 @@ class ItemList(ListAPIView):
     serializer_class = ItemSerializer
     queryset = Item.objects.all()
     pagination_class = PageNumberPagination
-    
+
 
 class ItemDetail(APIView):
     def get(self, request, slug, format=None):
@@ -329,8 +329,8 @@ class CategoryDetail(ListAPIView):
 
     def get_queryset(self,  *args, **kwargs):
         return Item.objects.filter(category__slug=self.kwargs.get('slug'))
-        
-    
+
+
 
 
 class BrandList(APIView):
@@ -367,3 +367,14 @@ class KeywordSearch(ListAPIView):
             items = items.filter(category__slug=self.request.query_params.get('slug', ''))
         return items[:int(self.request.query_params.get('limit', 10))]
 
+class WishlistToggle(APIView):
+    def get(self, request, slug, format=None):
+        w = Wishlist.objects.filter(item__slug=slug)
+        if w:
+            w.delete()
+            return Response({'wishlist': False}, status=HTTP_200_OK)
+        w = Wishlist()
+        item = Item.objects.get(slug=slug)
+        w.item_id = item.id
+        w.save()
+        return Response({'wishlist': True}, status=HTTP_200_OK)

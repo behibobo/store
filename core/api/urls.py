@@ -20,7 +20,8 @@ from .views import (
     BrandList,
     BrandDetail,
     Search,
-    KeywordSearch
+    KeywordSearch,
+    WishlistToggle,
 )
 
 urlpatterns = [
@@ -34,6 +35,7 @@ urlpatterns = [
          AddressDeleteView.as_view(), name='address-delete'),
     path('products/', ItemList.as_view(), name='product-list'),
     path('products/<str:slug>/', ItemDetail.as_view(), name='product-detail'),
+    path('products/<str:slug>/wishlist', WishlistToggle.as_view(), name='product-wishlist'),
     path('categories/', CategoryList.as_view(), name='category'),
     path('categories/<str:slug>/', CategoryDetail.as_view(), name='category-get'),
     path('brands/', BrandList.as_view(), name='category'),

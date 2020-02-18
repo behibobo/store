@@ -1,7 +1,7 @@
 from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
-    Address, Upload, Option, Brand, Category, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Address, Upload, Option, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
     Payment, Variation
 )
 
@@ -82,6 +82,7 @@ class ItemSerializer(serializers.ModelSerializer):
     variations = serializers.SerializerMethodField()
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
+    wishlist = serializers.SerializerMethodField()
     class Meta:
         model = Item
         fields = (
@@ -94,20 +95,24 @@ class ItemSerializer(serializers.ModelSerializer):
             'slug',
             'description',
             'images',
-            'variations'
+            'variations',
+            'wishlist'
         )
 
     def get_category(self, obj):
         return SingleCategorySerializer(obj.category).data
-    
+
     def get_brand(self, obj):
         return BrandSerializer(obj.brand).data
-    
+
     def get_images(self, obj):
         return ItemImageSerializer(obj.images.all(), many=True).data
 
     def get_variations(self, obj):
-        return VariationSerializer(obj.variations.all(), many=True).data
+        return VariationSerializer(obj.variations.order_by('order').all(), many=True).data
+
+    def get_wishlist(self, obj):
+        return Wishlist.objects.filter(item_id=obj.id).exists()
 
 class ItemImagesSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField(read_only=True)
@@ -137,5 +142,3 @@ class VariationSerializer(serializers.ModelSerializer):
             'option_three',
             'value_three',
         )
-
-    

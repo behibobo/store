@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from core.models import (
-    Address, ItemImage, Category, Option, Brand, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Address, ItemImage, Category, Option, Wishlist, Brand, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
     Payment
 )
 
@@ -89,6 +89,7 @@ class ItemSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
     variation = serializers.SerializerMethodField()
+    wishlist = serializers.SerializerMethodField()
     class Meta:
         model = Item
         fields = (
@@ -101,29 +102,34 @@ class ItemSerializer(serializers.ModelSerializer):
             'slug',
             'description',
             'image',
-            'variation'
+            'variation',
+            'wishlist',
         )
 
     def get_category(self, obj):
         return SingleCategorySerializer(obj.category).data
-    
+
     def get_brand(self, obj):
         return BrandSerializer(obj.brand).data
-    
+
     def get_image(self, obj):
         return ItemImageSerializer(obj.images.order_by('order').first()).data
 
     def get_variation(self, obj):
-        variant = obj.variations.filter(main=True)
-        if not variant:
-            variant = None
-        return VariationSerializer(variant).data
+        variant = obj.variations.order_by('order').first()
+        if variant:
+            return VariationSerializer(variant).data
+        return None
+
+    def get_wishlist(self, obj):
+        return Wishlist.objects.filter(item_id=obj.id).exists()
 
 
 
 class SingleItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     brand = serializers.SerializerMethodField()
+    wishlist = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField(read_only=True)
     variations = serializers.SerializerMethodField()
     category_id = serializers.IntegerField()
@@ -140,20 +146,24 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'slug',
             'description',
             'images',
-            'variations'
+            'variations',
+            'wishlist',
         )
 
     def get_category(self, obj):
         return SingleCategorySerializer(obj.category).data
-    
+
     def get_brand(self, obj):
         return BrandSerializer(obj.brand).data
-    
+
     def get_images(self, obj):
         return ItemImageSerializer(obj.images.order_by('order').all(), many=True).data
 
     def get_variations(self, obj):
         return VariationSerializer(obj.variations.all(), many=True).data
+
+    def get_wishlist(self, obj):
+        return Wishlist.objects.filter(item_id=obj.id).exists()
 
 
 class ItemImagesSerializer(serializers.ModelSerializer):
