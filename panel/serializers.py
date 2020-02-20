@@ -1,8 +1,8 @@
 from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
-    Address, Upload, Option, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation
+    Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
+    Payment, Variation, CategorySpec, ItemSpec,
 )
 
 
@@ -29,6 +29,14 @@ class ItemImageSerializer(serializers.ModelSerializer):
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
+        fields = (
+            'id',
+            'name'
+        )
+
+class SpecSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Spec
         fields = (
             'id',
             'name'
@@ -96,7 +104,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'description',
             'images',
             'variations',
-            'wishlist'
+            'wishlist',
         )
 
     def get_category(self, obj):
@@ -110,6 +118,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
     def get_variations(self, obj):
         return VariationSerializer(obj.variations.order_by('order').all(), many=True).data
+
 
     def get_wishlist(self, obj):
         return Wishlist.objects.filter(item_id=obj.id).exists()
@@ -141,4 +150,26 @@ class VariationSerializer(serializers.ModelSerializer):
             'value_two',
             'option_three',
             'value_three',
+        )
+
+class CategorySpecSerializer(serializers.ModelSerializer):
+    category_id = serializers.IntegerField()
+    class Meta:
+        model = CategorySpec
+        fields = (
+            'id',
+            'category_id',
+            'spec',
+            'order',
+        )
+
+class ItemSpecSerializer(serializers.ModelSerializer):
+    item_id = serializers.IntegerField()
+    class Meta:
+        model = ItemSpec
+        fields = (
+            'id',
+            'item_id',
+            'spec',
+            'value',
         )

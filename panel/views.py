@@ -23,9 +23,13 @@ from .serializers import (
     BrandSerializer,
     ItemImagesSerializer,
     OptionSerializer,
+    SpecSerializer,
     VariationSerializer,
+    CategorySerializer,
+    CategorySpecSerializer,
+    ItemSpecSerializer,
 )
-from core.models import Item, Brand, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from core.models import Item, CategorySpec, ItemSpec, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
 class UploadList(APIView):
     def post(self, request, format=None):
@@ -281,6 +285,20 @@ class OptionList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SpecList(APIView):
+
+    def get(self, request, format=None, *args, **kwagrs):
+        specs = Spec.objects.filter(name__startswith=request.query_params.get('keyword', ""))
+        serializer = SpecSerializer(specs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = SpecSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class ValueList(APIView):
     def get(self, request, format=None, *args, **kwagrs):
         values = Variation.objects.all().values('value_one', 'value_two', 'value_three')
@@ -323,7 +341,69 @@ class OptionDetail(APIView):
         option.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class CategorySpecList(APIView):
+    def get(self, request, pk, format=None):
+        category = Category.objects.get(pk=pk)
+        serializer = CategorySpecSerializer(category.specs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request,pk, format=None):
+        serializer = CategorySpecSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            category = Category.objects.get(pk=pk)
+            serializer = CategorySpecSerializer(category.specs, many=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CategorySpecDetail(APIView):
+    def get_object(self,pk):
+        try:
+            return CategorySpec.objects.get(pk=pk)
+        except CategorySpec.DoesNotExist:
+            raise Http404
+
+    def delete(self, request, pk, id, format=None):
+        item = self.get_object(id)
+        item.delete()
+        category = Category.objects.get(pk=pk)
+        serializer = CategorySpecSerializer(category.specs, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ItemSpecList(APIView):
+    def get(self, request, pk, format=None):
+        product = Item.objects.get(pk=pk)
+        specs = CategorySpec.objects.filter(category_id=product.category_id)
+        for item in specs:
+            if not ItemSpec.objects.filter(item_id=product.id).filter(spec=item.spec).exists():
+                s = ItemSpec()
+                s.item_id = product.id
+                s.spec = item.spec
+                s.value = ""
+                s.save()
+        serializer = ItemSpecSerializer(product.specs, many=True)
+        return Response(serializer.data)
+    
+    def get_object(self, pk):
+        try:
+            return Item.objects.get(pk=pk)
+        except Item.DoesNotExist:
+            raise Http404
+
+    def post(self, request, pk, format=None):
+        product = self.get_object(pk=pk)
+        for item in request.data:
+            sp = ItemSpec.objects.filter(item_id=product.id).filter(spec=item['spec']).first()
+            sp.value = item['value']
+            sp.save()
+        serializer = ItemSpecSerializer(product.specs, many=True)
+        return Response(serializer.data)
+    
+
 def modify_input_for_multiple_files(image):
     dict = {}
     dict['file_path'] = image
     return dict
+
+

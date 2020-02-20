@@ -43,6 +43,11 @@ class Option(models.Model):
     def __str__(self):
         return self.name
 
+class Spec(models.Model):
+    name = models.CharField(max_length=200)
+    def __str__(self):
+        return self.name
+
 class Seo(models.Model):
     item_id = models.PositiveIntegerField()
     title = models.CharField(max_length=150, blank=True, null=True)
@@ -72,6 +77,17 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CategorySpec(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='specs')
+    spec = models.CharField(max_length=200)
+    order = models.IntegerField(default=1)
+
+    def __str__(self):
+        return "{} - {}".format(self.category.name, self.spec)
+
+
 
 class Item(models.Model):
     name = models.CharField(max_length=150)
@@ -105,6 +121,14 @@ class ItemImage(models.Model):
 
     def __str__(self):
         return self.item.name
+
+class ItemSpec(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='specs')
+    spec = models.CharField(max_length=200,blank=True, null=True,)
+    value = models.CharField(max_length=200,blank=True, null=True,)
+
+    def __str__(self):
+        return "{} - {}".format(self.item.name, self.spec)
 
 class Variation(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='variations')
