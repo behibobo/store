@@ -18,9 +18,9 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from core.models import Item, OrderItem, Order,Category, Brand
 from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
-    PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer
+    PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer, ItemSpecSerializer,
 )
-from core.models import Item, Wishlist, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from core.models import Item, Wishlist, OrderItem, Order, ItemSpec, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
 
 
 import stripe
@@ -378,3 +378,13 @@ class WishlistToggle(APIView):
         w.item_id = item.id
         w.save()
         return Response({'wishlist': True}, status=HTTP_200_OK)
+
+
+
+class ItemSpecList(APIView):
+    def get(self, request, slug, format=None):
+        product = Item.objects.get(slug=slug)
+        
+        serializer = ItemSpecSerializer(product.specs, many=True)
+        return Response(serializer.data)
+    

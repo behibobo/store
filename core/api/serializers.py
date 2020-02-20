@@ -3,7 +3,7 @@ from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from core.models import (
     Address, ItemImage, Category, Option, Wishlist, Brand, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment
+    Payment, ItemSpec,
 )
 
 
@@ -89,6 +89,7 @@ class ItemSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
     variation = serializers.SerializerMethodField()
+    specs = serializers.SerializerMethodField()
     wishlist = serializers.SerializerMethodField()
     class Meta:
         model = Item
@@ -123,6 +124,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
     def get_wishlist(self, obj):
         return Wishlist.objects.filter(item_id=obj.id).exists()
+    
 
 
 
@@ -330,4 +332,16 @@ class CategorySerializer(serializers.ModelSerializer):
             'parent',
             'image',
             'children'
+        )
+
+
+class ItemSpecSerializer(serializers.ModelSerializer):
+    item_id = serializers.IntegerField()
+    class Meta:
+        model = ItemSpec
+        fields = (
+            'id',
+            'item_id',
+            'spec',
+            'value',
         )
