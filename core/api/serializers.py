@@ -105,6 +105,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'image',
             'variation',
             'wishlist',
+            'specs',
         )
 
     def get_category(self, obj):
@@ -125,6 +126,9 @@ class ItemSerializer(serializers.ModelSerializer):
     def get_wishlist(self, obj):
         return Wishlist.objects.filter(item_id=obj.id).exists()
     
+    def get_specs(self, obj):
+        return ItemSpecSerializer(ItemSpec.objects.filter(item_id = obj.id), many=True).data
+
 
 
 
