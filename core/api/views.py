@@ -2,7 +2,7 @@ from django_countries import countries
 from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from rest_framework.generics import (
@@ -20,11 +20,14 @@ from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
     PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer, ItemSpecSerializer,
 )
-from core.models import Item, Wishlist, OrderItem, Order, ItemSpec, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from panel.serializers import (
+    SliderSerializer,
+)
+from core.models import Item, Wishlist, OrderItem, Order, ItemSpec, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider
 
 
 import stripe
-
+import datetime
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -323,7 +326,24 @@ class CategoryList(APIView):
 class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
-class CategoryDetail(ListAPIView):
+class CategoryDetail(APIView):
+    def get(self, request, slug, format=None):
+        category = Category.objects.get(slug=slug)
+        items = Item.objects.filter(category_id = category.id)
+        serialized_item = ItemSerializer(items, many=True).data
+        options = []
+        keys = []
+        values = []
+        for item in items:
+            variations = Variation.objects.filter(item_id = item.id)
+            for v in variations:
+                keys.append(v['option_one'])
+                keys.append(v['option_two'])
+                keys.append(v['option_three'])
+
+
+        return JsonResponse({"items": serialized_item, "filters": ""}, safe=False, status=HTTP_200_OK)
+
     serializer_class = ItemSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -387,4 +407,13 @@ class ItemSpecList(APIView):
         
         serializer = ItemSpecSerializer(product.specs, many=True)
         return Response(serializer.data)
-    
+
+class SliderList(APIView):
+    def get(self, request, format=None):
+        sliders = Slider.objects.filter(display=True)
+        now=datetime.date.today()
+        # sliders = sliders.filter(finish_date__lte=now)
+        sliders = sliders.order_by('order')
+        serializer = SliderSerializer(sliders, many=True)
+        return Response(serializer.data)
+

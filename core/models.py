@@ -270,6 +270,18 @@ class Coupon(models.Model):
     def __str__(self):
         return self.code
 
+class Slider(models.Model):
+    image = models.CharField(max_length=300, blank=True, null=True)
+    title = models.CharField(max_length=300, blank=True, null=True)
+    content = models.CharField(max_length=300, blank=True, null=True)
+    link = models.CharField(max_length=300, blank=True, null=True)
+    order = models.IntegerField(default=1)
+    display = models.BooleanField(default=True)
+    start_date = models.DateTimeField(blank=True, null=True)
+    finish_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.code
 
 class Refund(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

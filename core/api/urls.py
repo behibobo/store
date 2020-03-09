@@ -23,6 +23,7 @@ from .views import (
     KeywordSearch,
     WishlistToggle,
     ItemSpecList,
+    SliderList,
 )
 
 urlpatterns = [
@@ -53,5 +54,6 @@ urlpatterns = [
     path('order-item/update-quantity/',
          OrderQuantityUpdateView.as_view(), name='order-item-update-quantity'),
     path('payments/', PaymentListView.as_view(), name='payment-list'),
+    path('sliders/', SliderList.as_view(), name='slider-list'),
 
 ]

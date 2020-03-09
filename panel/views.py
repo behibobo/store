@@ -28,8 +28,9 @@ from .serializers import (
     CategorySerializer,
     CategorySpecSerializer,
     ItemSpecSerializer,
+    SliderSerializer,
 )
-from core.models import Item, CategorySpec, ItemSpec, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation
+from core.models import Item, CategorySpec, ItemSpec, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider
 
 class UploadList(APIView):
     def post(self, request, format=None):
@@ -400,6 +401,65 @@ class ItemSpecList(APIView):
         serializer = ItemSpecSerializer(product.specs, many=True)
         return Response(serializer.data)
     
+
+class SliderList(APIView):
+    def get(self, request, format=None):
+        sliders = Slider.objects.order_by('order')
+        serializer = SliderSerializer(sliders, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = SliderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class SliderDetail(APIView):
+    
+    def get_object(self, pk):
+        try:
+            return Slider.objects.get(pk=pk)
+        except Slider.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        slider = self.get_object(pk)
+        serializer = SliderSerializer(slider)
+        return Response(serializer.data)
+
+
+    def put(self, request, pk, format=None):
+        slider = self.get_object(pk)
+        serializer = SliderSerializer(slider, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        slider = self.get_object(pk)
+        slider.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class SliderToggle(APIView):
+    def get(self, request, pk, format=None):
+        slider = Slider.objects.get(pk=pk)
+        slider.display = not slider.display
+        slider.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class SliderSort(APIView):
+    def post(self, request, format=None):
+        data = request.data
+        data = data["ids"]
+        for index, item in enumerate(data):
+            slider = Slider.objects.get(pk=item)
+            slider.order = index
+            slider.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 def modify_input_for_multiple_files(image):
     dict = {}

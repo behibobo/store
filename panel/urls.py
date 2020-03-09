@@ -19,6 +19,10 @@ from .views import (
     CategorySpecDetail,
     CategorySpecList,
     ItemSpecList,
+    SliderList,
+    SliderDetail,
+    SliderToggle,
+    SliderSort,
 )
 
 urlpatterns = [
@@ -41,4 +45,8 @@ urlpatterns = [
     path('uploads/<int:pk>/', UploadDetail.as_view(), name='admin-upload-get'),
     path('categories/<int:pk>/specs/', CategorySpecList.as_view(), name='admin-category-specs'),
     path('categories/<int:pk>/specs/<int:id>/', CategorySpecDetail.as_view(), name='admin-category-specs-get'),
+    path('sliders/', SliderList.as_view(), name='admin-sliders'),
+    path('sliders/<int:pk>/', SliderDetail.as_view(), name='admin-slider-get'),
+    path('sliders/<int:pk>/toggle', SliderToggle.as_view(), name='admin-slider-toggle'),
+    path('slider/sort/', SliderSort.as_view(), name='admin-slider-order'),
 ]
