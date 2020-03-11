@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption
 )
 
 
@@ -150,6 +150,17 @@ class VariationSerializer(serializers.ModelSerializer):
             'value_two',
             'option_three',
             'value_three',
+        )
+
+class ItemOptionSerializer(serializers.ModelSerializer):
+    item_id = serializers.IntegerField()
+    class Meta:
+        model = ItemOption
+        fields = (
+            'id',
+            'item_id',
+            'option',
+            'value',
         )
 
 class CategorySpecSerializer(serializers.ModelSerializer):

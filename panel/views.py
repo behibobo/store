@@ -29,8 +29,9 @@ from .serializers import (
     CategorySpecSerializer,
     ItemSpecSerializer,
     SliderSerializer,
+    ItemOptionSerializer,
 )
-from core.models import Item, CategorySpec, ItemSpec, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider
+from core.models import Item, CategorySpec, ItemSpec, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider, ItemOption
 
 class UploadList(APIView):
     def post(self, request, format=None):
@@ -229,10 +230,24 @@ class ItemDetail(APIView):
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class ItemOptionList(APIView):
+    def get(self, request, pk, format=None):
+        items = ItemOption.objects.filter(item_id=pk)
+        serializer = ItemOptionSerializer(items, many=True)
+        return Response(serializer.data)
 
+    def post(self, request, pk, format=None):
+        data = request.data
+        for index, item in enumerate(data):
+            for val in item['values']:
+                o = ItemOption()
+                o.item_id = pk
+                o.option = item['key']
+                o.value = val
+                o.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 class VariationList(APIView):
-
     def get(self, request, pk, format=None):
         variations = Variation.objects.filter(item_id=pk)
         serializer = VariationSerializer(variations, many=True)
@@ -305,15 +320,24 @@ class ValueList(APIView):
         values = Variation.objects.all().values('value_one', 'value_two', 'value_three')
         data = []
         for item in values:
-            if item['value_one'] not in data and item['value_one'].startswith(request.query_params.get('keyword', "")):
+            if item['value_one'] is not None and item['value_one'] not in data and item['value_one'].startswith(request.query_params.get('keyword', "")):
                 data.append(item['value_one'])
-            if item['value_two'] not in data and item['value_two'].startswith(request.query_params.get('keyword', "")):
+            if item['value_two'] is not None and item['value_two'] not in data and item['value_two'].startswith(request.query_params.get('keyword', "")):
                 data.append(item['value_two'])
-            if item['value_three'] not in data and item['value_three'].startswith(request.query_params.get('keyword', "")):
+            if item['value_three'] is not None and item['value_three'] not in data and item['value_three'].startswith(request.query_params.get('keyword', "")):
                 data.append(item['value_three'])
 
         return JsonResponse(data, safe=False)
 
+class OptionValueList(APIView):
+    def get(self, request, format=None, *args, **kwagrs):
+        values = ItemOption.objects.all().values('value')
+        data = []
+        for item in values:
+            if item['value'] is not None and item['value'] not in data and item['value'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['value'])
+
+        return JsonResponse(data, safe=False)
 
 class OptionDetail(APIView):
 

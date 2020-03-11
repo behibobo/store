@@ -144,7 +144,15 @@ class Variation(models.Model):
     order = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.id
+        return self.item.name
+
+class ItemOption(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='options')
+    option = models.CharField(max_length=150,blank=True, null=True,)
+    value = models.CharField(max_length=150,blank=True, null=True,)
+
+    def __str__(self):
+        return self.item.name
 
 class Wishlist(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='items')

@@ -326,26 +326,55 @@ class CategoryList(APIView):
 class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
-class CategoryDetail(APIView):
+class CategoryDetail(ListAPIView):
+    serializer_class = ItemSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        items = Item.objects.filter(category__slug=self.kwargs.get('slug'))
+        varations = Variation.objects.all()
+        if self.request.GET.get("filters"):
+            item_ids = []
+            filters = self.request.GET.getlist("filters")
+            for item in filters:
+                values = item.split(",")
+                item_ids += varations.filter(Q(value_one__in=values) | Q(value_two__in=values) | Q(value_three__in=values)).values_list('item_id', flat=True)
+            return items.filter(pk__in=item_ids)
+            print(item_ids)
+        return items
+        
+class CategoryFilters(APIView):
     def get(self, request, slug, format=None):
         category = Category.objects.get(slug=slug)
         items = Item.objects.filter(category_id = category.id)
         serialized_item = ItemSerializer(items, many=True).data
-        options = []
-        keys = []
+        options = {}
         values = []
+        keys = []
         for item in items:
             variations = Variation.objects.filter(item_id = item.id)
             for v in variations:
-                keys.append(v['option_one'])
-                keys.append(v['option_two'])
-                keys.append(v['option_three'])
+                if v.option_one is not None and v.option_one not in options:
+                    options[str(v.option_one)] = [v.value_one]
+                elif v.option_one is not None:
+                    options[str(v.option_one)].append(v.value_one)
+                
+                if v.option_two is not None and v.option_two not in options:
+                    options[str(v.option_two)] = [v.value_two]
+                
+                elif v.option_two is not None:
+                    options[str(v.option_two)].append(v.value_two)
 
+                if v.option_three is not None and v.option_three not in options:
+                    options[str(v.option_three)] = [v.value_three]
+                
+                elif v.option_three is not None:
+                    options[str(v.option_three)].append(v.value_three)
+        
+        for k , v in options.items():
+            values.append({"key": k, "values": v})
 
-        return JsonResponse({"items": serialized_item, "filters": ""}, safe=False, status=HTTP_200_OK)
-
-    serializer_class = ItemSerializer
-    pagination_class = StandardResultsSetPagination
+        return JsonResponse({"filters": values}, safe=False, status=HTTP_200_OK)
 
     def get_queryset(self,  *args, **kwargs):
         return Item.objects.filter(category__slug=self.kwargs.get('slug'))

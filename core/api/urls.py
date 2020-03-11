@@ -24,6 +24,7 @@ from .views import (
     WishlistToggle,
     ItemSpecList,
     SliderList,
+    CategoryFilters,
 )
 
 urlpatterns = [
@@ -41,6 +42,7 @@ urlpatterns = [
     path('products/<str:slug>/specs/', ItemSpecList.as_view(), name='product-specs'),
     path('categories/', CategoryList.as_view(), name='category'),
     path('categories/<str:slug>/', CategoryDetail.as_view(), name='category-get'),
+    path('categories/<str:slug>/filters/', CategoryFilters.as_view(), name='category-filters'),
     path('brands/', BrandList.as_view(), name='category'),
     path('brands/<str:slug>/', BrandDetail.as_view(), name='category-get'),
     path('search/', Search.as_view(), name='search-get'),
