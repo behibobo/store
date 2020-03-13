@@ -232,12 +232,23 @@ class ItemDetail(APIView):
 
 class ItemOptionList(APIView):
     def get(self, request, pk, format=None):
-        items = ItemOption.objects.filter(item_id=pk)
-        serializer = ItemOptionSerializer(items, many=True)
-        return Response(serializer.data)
+        options = {}
+        result = []
+        items = ItemOption.objects.filter(item_id=1)
+        for item in items:
+            if item.option not in options:
+                options[str(item.option)] = [item.value]
+            else:
+                options[str(item.option)].append(item.value)
+        
+        for k , v in options.items():
+            result.append({"key": k, "values": v})
+
+        return Response(result)
 
     def post(self, request, pk, format=None):
         data = request.data
+        ItemOption.objects.filter(item_id = pk).delete()
         for index, item in enumerate(data):
             for val in item['values']:
                 o = ItemOption()
