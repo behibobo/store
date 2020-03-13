@@ -341,8 +341,9 @@ class SpecList(APIView):
 
 class ValueList(APIView):
     def get(self, request, format=None, *args, **kwagrs):
-        values = Variation.objects.all().values('value_one', 'value_two', 'value_three')
-        values_two = ItemOption.objects.all().values('value')
+        opt = request.query_params.get('option', "")
+        values = Variation.objects.filter(Q(option_one=opt) | Q(option_two=opt) | Q(option_three=opt)).values('value_one', 'value_two', 'value_three')
+        values_two = ItemOption.objects.filter(option=opt).values('value')
         data = []
         for item in values:
             if item['value_one'] is not None and item['value_one'] not in data and item['value_one'].startswith(request.query_params.get('keyword', "")):
