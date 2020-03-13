@@ -301,9 +301,22 @@ class VariationDetail(APIView):
 class OptionList(APIView):
 
     def get(self, request, format=None, *args, **kwagrs):
-        options = Option.objects.filter(name__startswith=request.query_params.get('keyword', ""))
-        serializer = OptionSerializer(options, many=True)
-        return Response(serializer.data)
+        options_one = Variation.objects.all().values('option_one', 'option_two', 'option_three')
+        options_two = ItemOption.objects.all().values('option')
+        data = []
+        for item in options_one:
+            if item['option_one'] is not None and item['option_one'] not in data and item['option_one'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['option_one'])
+            if item['option_two'] is not None and item['option_two'] not in data and item['option_two'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['option_two'])
+            if item['option_three'] is not None and item['option_three'] not in data and item['option_three'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['option_three'])
+
+        for item in options_two:
+            if item['option'] is not None and item['option'] not in data and item['option'].startswith(request.query_params.get('keyword', "")):
+                data.append(item['option'])
+
+        return JsonResponse(data, safe=False)
 
     def post(self, request, format=None):
         serializer = OptionSerializer(data=request.data)
@@ -329,6 +342,7 @@ class SpecList(APIView):
 class ValueList(APIView):
     def get(self, request, format=None, *args, **kwagrs):
         values = Variation.objects.all().values('value_one', 'value_two', 'value_three')
+        values_two = ItemOption.objects.all().values('value')
         data = []
         for item in values:
             if item['value_one'] is not None and item['value_one'] not in data and item['value_one'].startswith(request.query_params.get('keyword', "")):
@@ -338,17 +352,12 @@ class ValueList(APIView):
             if item['value_three'] is not None and item['value_three'] not in data and item['value_three'].startswith(request.query_params.get('keyword', "")):
                 data.append(item['value_three'])
 
-        return JsonResponse(data, safe=False)
-
-class OptionValueList(APIView):
-    def get(self, request, format=None, *args, **kwagrs):
-        values = ItemOption.objects.all().values('value')
-        data = []
-        for item in values:
+        for item in values_two:
             if item['value'] is not None and item['value'] not in data and item['value'].startswith(request.query_params.get('keyword', "")):
                 data.append(item['value'])
 
         return JsonResponse(data, safe=False)
+
 
 class OptionDetail(APIView):
 

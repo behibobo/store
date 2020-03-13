@@ -7,3 +7,4 @@ build
 static
 media
 package-lock.json
+db.sqlite3
