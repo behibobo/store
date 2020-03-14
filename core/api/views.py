@@ -397,9 +397,9 @@ class CategoryFilters(APIView):
         for item in items:
             itemoptions = ItemOption.objects.filter(item_id = item.id)
             for opt in itemoptions:
-                if opt.option is not None and opt.option not in options:
+                if opt.option is not None and opt.option not in options.keys():
                     options[str(opt.option)] = [opt.value]
-                elif opt.option is not None:
+                elif opt.option is not None and opt.value not in options[str(opt.option)]:
                     options[str(opt.option)].append(opt.value)
 
         for k , v in options.items():
