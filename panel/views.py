@@ -80,10 +80,10 @@ class UploadSort(APIView):
         return Response(serializer.data)
 
 
-    
+
 
 class UploadDetail(APIView):
-    
+
     def get_object(self, pk):
         try:
             return Upload.objects.get(pk=pk)
@@ -116,7 +116,7 @@ class CategoryList(APIView):
 
 
 class CategoryDetail(APIView):
-    
+
     def get_object(self, pk):
         try:
             return Category.objects.get(pk=pk)
@@ -144,7 +144,7 @@ class CategoryDetail(APIView):
 
 
 class BrandList(APIView):
-   
+
     def get(self, request, format=None):
         brands = Brand.objects.filter(display=True)
         serializer = BrandSerializer(brands, many=True)
@@ -234,13 +234,13 @@ class ItemOptionList(APIView):
     def get(self, request, pk, format=None):
         options = {}
         result = []
-        items = ItemOption.objects.filter(item_id=1)
+        items = ItemOption.objects.filter(item_id=pk)
         for item in items:
             if item.option not in options:
                 options[str(item.option)] = [item.value]
             else:
                 options[str(item.option)].append(item.value)
-        
+
         for k , v in options.items():
             result.append({"key": k, "values": v})
 
@@ -430,7 +430,7 @@ class ItemSpecList(APIView):
                 s.save()
         serializer = ItemSpecSerializer(product.specs, many=True)
         return Response(serializer.data)
-    
+
     def get_object(self, pk):
         try:
             return Item.objects.get(pk=pk)
@@ -445,7 +445,7 @@ class ItemSpecList(APIView):
             sp.save()
         serializer = ItemSpecSerializer(product.specs, many=True)
         return Response(serializer.data)
-    
+
 
 class SliderList(APIView):
     def get(self, request, format=None):
@@ -463,7 +463,7 @@ class SliderList(APIView):
 
 
 class SliderDetail(APIView):
-    
+
     def get_object(self, pk):
         try:
             return Slider.objects.get(pk=pk)
@@ -510,5 +510,3 @@ def modify_input_for_multiple_files(image):
     dict = {}
     dict['file_path'] = image
     return dict
-
-

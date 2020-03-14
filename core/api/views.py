@@ -338,13 +338,12 @@ class CategoryDetail(ListAPIView):
 
     def get_queryset(self):
         items = Item.objects.filter(category__slug=self.kwargs.get('slug'))
-        varations = Variation.objects.all()
         if self.request.GET.get("filters"):
             item_ids = []
             filters = self.request.GET.getlist("filters")
             for item in filters:
                 values = item.split(",")
-                new_ids = varations.filter(Q(value_one__in=values) | Q(value_two__in=values) | Q(value_three__in=values)).values_list('item_id', flat=True)
+                new_ids = ItemOption.objects.filter(value__in=values).values_list('item_id', flat=True)
                 item_ids = list(set(item_ids) & set(new_ids))
             return items.filter(pk__in=item_ids)
             print(item_ids)
