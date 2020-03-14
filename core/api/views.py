@@ -342,12 +342,10 @@ class CategoryDetail(ListAPIView):
         items = Item.objects.filter(category__slug=self.kwargs.get('slug'))
         if self.request.GET.get("filters"):
             item_ids = items.values_list('id', flat=True)
-            print(item_ids)
             filters = self.request.GET.getlist("filters")
             for item in filters:
                 values = item.split(",")
                 new_ids = ItemOption.objects.filter(value__in=values).values_list('item_id', flat=True)
-                print(new_ids)
                 item_ids = list(set(item_ids) & set(new_ids))
             return items.filter(pk__in=item_ids)
             print(item_ids)
