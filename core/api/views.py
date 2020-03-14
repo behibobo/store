@@ -344,7 +344,8 @@ class CategoryDetail(ListAPIView):
             filters = self.request.GET.getlist("filters")
             for item in filters:
                 values = item.split(",")
-                item_ids += varations.filter(Q(value_one__in=values) | Q(value_two__in=values) | Q(value_three__in=values)).values_list('item_id', flat=True)
+                new_ids = varations.filter(Q(value_one__in=values) | Q(value_two__in=values) | Q(value_three__in=values)).values_list('item_id', flat=True)
+                item_ids = list(set(item_ids) & set(new_ids))
             return items.filter(pk__in=item_ids)
             print(item_ids)
         return items
