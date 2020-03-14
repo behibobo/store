@@ -238,7 +238,7 @@ class ItemOptionList(APIView):
         for item in items:
             if item.option not in options.keys():
                 options[str(item.option)] = [item.value]
-            else:
+            elif item.value not in options[str(item.option)]:
                 options[str(item.option)].append(item.value)
 
         for k , v in options.items():
