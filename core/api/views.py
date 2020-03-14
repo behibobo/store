@@ -23,7 +23,13 @@ from .serializers import (
 from panel.serializers import (
     SliderSerializer,
 )
-from core.models import Item, Wishlist, OrderItem, Order, ItemSpec, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider
+from core.models import (
+    Item, Wishlist, OrderItem,
+    Order, ItemSpec, Address,
+    Payment, Coupon, Refund,
+    UserProfile, Variation,
+    ItemVariation, Slider, ItemOption,
+    )
 
 
 import stripe
@@ -342,42 +348,26 @@ class CategoryDetail(ListAPIView):
             return items.filter(pk__in=item_ids)
             print(item_ids)
         return items
-        
+
 class CategoryFilters(APIView):
     def get(self, request, slug, format=None):
         category = Category.objects.get(slug=slug)
         items = Item.objects.filter(category_id = category.id)
-        serialized_item = ItemSerializer(items, many=True).data
         options = {}
         values = []
         keys = []
         for item in items:
-            variations = Variation.objects.filter(item_id = item.id)
-            for v in variations:
-                if v.option_one is not None and v.option_one not in options:
-                    options[str(v.option_one)] = [v.value_one]
-                elif v.option_one is not None:
-                    options[str(v.option_one)].append(v.value_one)
-                
-                if v.option_two is not None and v.option_two not in options:
-                    options[str(v.option_two)] = [v.value_two]
-                
-                elif v.option_two is not None:
-                    options[str(v.option_two)].append(v.value_two)
+            itemoptions = ItemOption.objects.filter(item_id = item.id)
+            for opt in itemoptions:
+                if opt.option is not None and opt.option not in options:
+                    options[str(opt.option)] = [opt.value]
+                elif opt.option is not None:
+                    options[str(opt.option)].append(opt.value)
 
-                if v.option_three is not None and v.option_three not in options:
-                    options[str(v.option_three)] = [v.value_three]
-                
-                elif v.option_three is not None:
-                    options[str(v.option_three)].append(v.value_three)
-        
         for k , v in options.items():
             values.append({"key": k, "values": v})
-
         return JsonResponse({"filters": values}, safe=False, status=HTTP_200_OK)
 
-    def get_queryset(self,  *args, **kwargs):
-        return Item.objects.filter(category__slug=self.kwargs.get('slug'))
 
 
 
@@ -433,7 +423,7 @@ class WishlistToggle(APIView):
 class ItemSpecList(APIView):
     def get(self, request, slug, format=None):
         product = Item.objects.get(slug=slug)
-        
+
         serializer = ItemSpecSerializer(product.specs, many=True)
         return Response(serializer.data)
 
@@ -445,4 +435,3 @@ class SliderList(APIView):
         sliders = sliders.order_by('order')
         serializer = SliderSerializer(sliders, many=True)
         return Response(serializer.data)
-
