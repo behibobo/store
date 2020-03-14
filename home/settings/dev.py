@@ -14,6 +14,7 @@ DATABASES = {
     }
 }
 CORS_ORIGIN_ALLOW_ALL = True
+DEFAULT_CHARSET = 'utf-8'
 
 # CORS_ORIGIN_WHITELIST = (
 #     'http://192.168.1.103:3000',

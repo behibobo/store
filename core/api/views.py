@@ -9,8 +9,10 @@ from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView
 )
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from django.core.paginator import Paginator
 
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from django.utils.encoding import smart_str
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -339,15 +341,53 @@ class CategoryDetail(ListAPIView):
     def get_queryset(self):
         items = Item.objects.filter(category__slug=self.kwargs.get('slug'))
         if self.request.GET.get("filters"):
-            item_ids = []
+            item_ids = items.values_list('id', flat=True)
+            print(item_ids)
             filters = self.request.GET.getlist("filters")
             for item in filters:
                 values = item.split(",")
                 new_ids = ItemOption.objects.filter(value__in=values).values_list('item_id', flat=True)
+                print(new_ids)
                 item_ids = list(set(item_ids) & set(new_ids))
             return items.filter(pk__in=item_ids)
             print(item_ids)
         return items
+
+# class CategoryDetail(APIView):
+#     serializer_class = ItemSerializer
+#     pagination_class = StandardResultsSetPagination
+#
+#     @property
+#     def paginator(self):
+#         if not hasattr(self, '_paginator'):
+#             if self.pagination_class is None:
+#                 self._paginator = None
+#             else:
+#                 self._paginator = self.pagination_class()
+#         else:
+#             pass
+#         return self._paginator
+#     def paginate_queryset(self, queryset):
+#
+#         if self.paginator is None:
+#             return None
+#         return self.paginator.paginate_queryset(queryset,
+#                    self.request, view=self)
+#     def get_paginated_response(self, data):
+#         assert self.paginator is not None
+#         return self.paginator.get_paginated_response(data)
+#
+#
+#     def post(self, request, slug, format=None):
+#         items = Item.objects.filter(category__slug=self.kwargs.get('slug'))
+#         print(request.data['filters'])
+#         res = self.paginate_queryset(items)
+#         if res is not None:
+#             serializer = self.get_paginated_response(self.serializer_class(res,
+#  many=True).data)
+#         else:
+#             serializer = self.serializer_class(items, many=True)
+#         return Response(serializer.data, status=HTTP_200_OK)
 
 class CategoryFilters(APIView):
     def get(self, request, slug, format=None):
