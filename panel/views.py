@@ -236,7 +236,7 @@ class ItemOptionList(APIView):
         result = []
         items = ItemOption.objects.filter(item_id=pk)
         for item in items:
-            if item.option not in options:
+            if item.option not in options.keys():
                 options[str(item.option)] = [item.value]
             else:
                 options[str(item.option)].append(item.value)
