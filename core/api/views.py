@@ -402,6 +402,7 @@ class CategoryFilters(APIView):
                 elif opt.option is not None and opt.value not in options[str(opt.option)]:
                     options[str(opt.option)].append(opt.value)
 
+
         for k , v in options.items():
             values.append({"key": k, "values": v})
         return JsonResponse({"filters": values}, safe=False, status=HTTP_200_OK)
