@@ -25,10 +25,12 @@ from .views import (
     ItemSpecList,
     SliderList,
     CategoryFilters,
+    UserList,
 )
 
 urlpatterns = [
     path('user-id/', UserIDView.as_view(), name='user-id'),
+    path('users/', UserList.as_view(), name='users'),
     path('countries/', CountryListView.as_view(), name='country-list'),
     path('addresses/', AddressListView.as_view(), name='address-list'),
     path('addresses/create/', AddressCreateView.as_view(), name='address-create'),

@@ -10,6 +10,8 @@ from rest_framework.generics import (
     UpdateAPIView, DestroyAPIView
 )
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from django.utils.encoding import smart_str
@@ -43,6 +45,25 @@ class UserIDView(APIView):
     def get(self, request, *args, **kwargs):
         return Response({'userID': request.user.id}, status=HTTP_200_OK)
 
+class UserList(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data['username']
+        password = request.data['password']
+        if User.objects.filter(username=username).exists():
+            return Response({"message": "username already taken"}, status=HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(username=username, is_staff=False,
+                                    password=password)
+        user.save()
+        user_profile = UserProfile.objects.get(user__id=user.pk)
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'status': user_profile.status,
+            'user_type': int(user.is_staff)
+        })
 
 # class ItemList(APIView):
 #     def get(self, request, format=None):
