@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City
 )
 
 
@@ -24,6 +24,24 @@ class ItemImageSerializer(serializers.ModelSerializer):
             'item_id',
             'order',
             'image'
+        )
+class ProvinceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = (
+            'id',
+            'name'
+        )
+
+
+class CitySerializer(serializers.ModelSerializer):
+    province_id = serializers.IntegerField()
+    class Meta:
+        model = City
+        fields = (
+            'id',
+            'province_id',
+            'name'
         )
 
 class OptionSerializer(serializers.ModelSerializer):

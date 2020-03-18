@@ -18,11 +18,6 @@ LABEL_CHOICES = (
     ('D', 'danger')
 )
 
-ADDRESS_CHOICES = (
-    ('B', 'Billing'),
-    ('S', 'Shipping'),
-)
-
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
@@ -242,15 +237,19 @@ class Order(models.Model):
             total -= self.coupon.amount
         return total
 
+class Province(models.Model):
+    name = models.CharField(max_length=200)
+
+class City(models.Model):
+    province = models.ForeignKey(Province,
+                             on_delete=models.CASCADE)    
+    name = models.CharField(max_length=200)
 
 class Address(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     street_address = models.CharField(max_length=100)
-    apartment_address = models.CharField(max_length=100)
-    country = CountryField(multiple=False)
-    zip = models.CharField(max_length=100)
-    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+    zip = models.CharField(max_length=100, blank=True, null=True)
     default = models.BooleanField(default=False)
 
     def __str__(self):

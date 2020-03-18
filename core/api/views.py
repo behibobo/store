@@ -25,7 +25,7 @@ from .serializers import (
     PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer, ItemSpecSerializer,
 )
 from panel.serializers import (
-    SliderSerializer,
+    SliderSerializer, ProvinceSerializer, CitySerializer,
 )
 from core.models import (
     Item, Wishlist, OrderItem,
@@ -33,6 +33,7 @@ from core.models import (
     Payment, Coupon, Refund,
     UserProfile, Variation,
     ItemVariation, Slider, ItemOption,
+    Province,City
     )
 
 
@@ -40,6 +41,17 @@ import stripe
 import datetime
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+class ProvinceList(ListAPIView):
+    def get(self, request, format=None):
+        queryset = Province.objects.all()
+        serializer = ProvinceSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class CityList(ListAPIView):
+    def get(self, request, id, format=None):
+        queryset = City.objects.filter(province_id=id)
+        serializer = CitySerializer(queryset, many=True)
+        return Response(serializer.data)
 
 class UserIDView(APIView):
     def get(self, request, *args, **kwargs):
@@ -308,33 +320,51 @@ class CountryListView(APIView):
         return Response(countries, status=HTTP_200_OK)
 
 
-class AddressListView(ListAPIView):
-    permission_classes = (IsAuthenticated, )
-    serializer_class = AddressSerializer
+class AddressList(APIView):
+    def get(self, request,format=None):
+        permission_classes = (IsAuthenticated, )
+        user_id = request.user.id
+        print(user_id)
+        addresses = Address.objects.filter(user_id=user_id)
+        serializer = AddressSerializer(addresses, many=True)
+        return Response(serializer.data)
 
-    def get_queryset(self):
-        address_type = self.request.query_params.get('address_type', None)
-        qs = Address.objects.all()
-        if address_type is None:
-            return qs
-        return qs.filter(user=self.request.user, address_type=address_type)
+    def post(self, request,format=None):
+        permission_classes = (IsAuthenticated, )
+        serializer = AddressSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AddressDetail(APIView):
+
+    def get_object(self, pk, id):
+        try:
+            return Address.objects.get(pk=id)
+        except Address.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, id,format=None):
+        permission_classes = (IsAuthenticated, )
+        address = self.get_object(pk, id)
+        serializer = AddressSerializer(address)
+        return Response(serializer.data)
 
 
-class AddressCreateView(CreateAPIView):
-    permission_classes = (IsAuthenticated, )
-    serializer_class = AddressSerializer
-    queryset = Address.objects.all()
+    def put(self, request, pk, id, format=None):
+        permission_classes = (IsAuthenticated, )
+        address = self.get_object(pk, id)
+        serializer = AddressSerializer(address, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class AddressUpdateView(UpdateAPIView):
-    permission_classes = (IsAuthenticated, )
-    serializer_class = AddressSerializer
-    queryset = Address.objects.all()
-
-
-class AddressDeleteView(DestroyAPIView):
-    permission_classes = (IsAuthenticated, )
-    queryset = Address.objects.all()
+    def delete(self, request, pk, id, format=None):
+        address = self.get_object(pk, id)
+        address.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PaymentListView(ListAPIView):

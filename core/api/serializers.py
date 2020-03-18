@@ -293,18 +293,17 @@ class ItemDetailSerializer(serializers.ModelSerializer):
 
 
 class AddressSerializer(serializers.ModelSerializer):
-    country = CountryField()
+    user_id = serializers.IntegerField()
+    city_id = serializers.IntegerField()
 
     class Meta:
         model = Address
         fields = (
             'id',
-            'user',
-            'street_address',
-            'apartment_address',
-            'country',
+            'user_id',
+            'address',
+            'city_id',
             'zip',
-            'address_type',
             'default'
         )
 
