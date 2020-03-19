@@ -247,7 +247,7 @@ class City(models.Model):
 
 class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    street_address = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
     zip = models.CharField(max_length=100, blank=True, null=True)
     default = models.BooleanField(default=False)

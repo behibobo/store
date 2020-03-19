@@ -304,7 +304,7 @@ class AddressSerializer(serializers.ModelSerializer):
             'address',
             'city_id',
             'zip',
-            'default'
+            'default',
         )
 
 

@@ -12,6 +12,7 @@ from rest_framework.generics import (
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
+from rest_framework import status
 
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from django.utils.encoding import smart_str
@@ -321,16 +322,15 @@ class CountryListView(APIView):
 
 
 class AddressList(APIView):
+    permission_classes = (IsAuthenticated, )
     def get(self, request,format=None):
-        permission_classes = (IsAuthenticated, )
         user_id = request.user.id
-        print(user_id)
         addresses = Address.objects.filter(user_id=user_id)
         serializer = AddressSerializer(addresses, many=True)
         return Response(serializer.data)
 
     def post(self, request,format=None):
-        permission_classes = (IsAuthenticated, )
+        request.data["user_id"] = request.user.id
         serializer = AddressSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -338,7 +338,7 @@ class AddressList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AddressDetail(APIView):
-
+    permission_classes = (IsAuthenticated, )
     def get_object(self, pk, id):
         try:
             return Address.objects.get(pk=id)
@@ -346,7 +346,6 @@ class AddressDetail(APIView):
             raise Http404
 
     def get(self, request, pk, id,format=None):
-        permission_classes = (IsAuthenticated, )
         address = self.get_object(pk, id)
         serializer = AddressSerializer(address)
         return Response(serializer.data)
