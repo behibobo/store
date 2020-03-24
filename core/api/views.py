@@ -102,90 +102,76 @@ class ItemDetail(APIView):
 
 
 class OrderQuantityUpdateView(APIView):
-    def post(self, request, *args, **kwargs):
-        slug = request.data.get('slug', None)
-        if slug is None:
+    def post(self, request, pk, *args, **kwargs):
+        quantity = request.data.get('quantity', None)
+
+
+        if quantity is None:
             return Response({"message": "Invalid data"}, status=HTTP_400_BAD_REQUEST)
-        item = get_object_or_404(Item, slug=slug)
-        order_qs = Order.objects.filter(
-            user=request.user,
-            ordered=False
-        )
-        if order_qs.exists():
-            order = order_qs[0]
-            # check if the order item is in the order
-            if order.items.filter(item__slug=item.slug).exists():
-                order_item = OrderItem.objects.filter(
-                    item=item,
-                    user=request.user,
-                    ordered=False
-                )[0]
-                if order_item.quantity > 1:
-                    order_item.quantity -= 1
-                    order_item.save()
-                else:
-                    order.items.remove(order_item)
-                return Response(status=HTTP_200_OK)
-            else:
-                return Response({"message": "This item was not in your cart"}, status=HTTP_400_BAD_REQUEST)
+
+
+        order_Item = get_object_or_404(OrderItem, pk=pk)
+        variation = get_object_or_404(Variation, pk=order_Item.variation_id)
+
+        if quantity > variation.stock:
+            return Response({"message": "More than Stock"}, status=HTTP_400_BAD_REQUEST)
+
+        if(quantity == 0):
+            order_Item.delete()
         else:
-            return Response({"message": "You do not have an active order"}, status=HTTP_400_BAD_REQUEST)
+            order_Item.quantity = quantity
+            order_Item.save()
+
+        return Response(status=HTTP_200_OK)
+        
 
 
-class OrderItemDeleteView(DestroyAPIView):
-    permission_classes = (IsAuthenticated, )
-    queryset = OrderItem.objects.all()
+class OrderItemDeleteView(APIView):
+    def delete(self, request, pk, *args, **kwargs):
+        order_Item = get_object_or_404(OrderItem, pk=pk)
+        order_Item.delete()
+        return Response(status=HTTP_200_OK)
 
 
 class AddToCartView(APIView):
+    permission_classes = (IsAuthenticated,)
     def post(self, request, *args, **kwargs):
-        slug = request.data.get('slug', None)
-        variations = request.data.get('variations', [])
-        if slug is None:
-            return Response({"message": "Invalid request"}, status=HTTP_400_BAD_REQUEST)
 
-        item = get_object_or_404(Item, slug=slug)
-
-        minimum_variation_count = Variation.objects.filter(item=item).count()
-        if len(variations) < minimum_variation_count:
-            return Response({"message": "Please specify the required variation types"}, status=HTTP_400_BAD_REQUEST)
-
-        order_item_qs = OrderItem.objects.filter(
-            item=item,
-            user=request.user,
+        order, found = Order.objects.get_or_create(
+            user=self.request.user,
             ordered=False
         )
-        for v in variations:
-            order_item_qs = order_item_qs.filter(
-                Q(item_variations__exact=v)
-            )
+
+        variation_id = request.data.get('variation_id', None)
+        quantity = request.data.get('quantity', None)
+        if variation_id is None or quantity is None:
+            return Response({"message": "Invalid request"}, status=HTTP_400_BAD_REQUEST)
+
+        variation = get_object_or_404(Variation, pk=variation_id)
+
+        if quantity > variation.stock:
+            return Response({"message": "More than Stock"}, status=HTTP_400_BAD_REQUEST)
+
+
+        order_item_qs = OrderItem.objects.filter(
+            variation=variation,
+            order=order
+        )
 
         if order_item_qs.exists():
             order_item = order_item_qs.first()
-            order_item.quantity += 1
+            order_item.quantity += quantity
             order_item.save()
         else:
             order_item = OrderItem.objects.create(
-                item=item,
-                user=request.user,
-                ordered=False
+                variation=variation,
+                order=order,
+                quantity = quantity,
             )
-            order_item.item_variations.add(*variations)
             order_item.save()
 
-        order_qs = Order.objects.filter(user=request.user, ordered=False)
-        if order_qs.exists():
-            order = order_qs[0]
-            if not order.items.filter(item__id=order_item.id).exists():
-                order.items.add(order_item)
-                return Response(status=HTTP_200_OK)
-
-        else:
-            ordered_date = timezone.now()
-            order = Order.objects.create(
-                user=request.user, ordered_date=ordered_date)
-            order.items.add(order_item)
-            return Response(status=HTTP_200_OK)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
 
 
 class OrderDetailView(RetrieveAPIView):
@@ -193,12 +179,17 @@ class OrderDetailView(RetrieveAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
-        try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            return order
-        except ObjectDoesNotExist:
-            raise Http404("You do not have an active order")
-            # return Response({"message": "You do not have an active order"}, status=HTTP_400_BAD_REQUEST)
+        order, found = Order.objects.get_or_create(
+            user=self.request.user,
+            ordered=False
+        )
+        return order
+        # try:
+        #     order = Order.objects.get(user=self.request.user, ordered=False)
+        #     return order
+        # except ObjectDoesNotExist:
+        #     raise Http404("You do not have an active order")
+        #     # return Response({"message": "You do not have an active order"}, status=HTTP_400_BAD_REQUEST)
 
 
 class PaymentView(APIView):
