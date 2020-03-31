@@ -127,10 +127,16 @@ class OrderQuantityUpdateView(APIView):
 
 
 class OrderItemDeleteView(APIView):
+    permission_classes = (IsAuthenticated,)
     def delete(self, request, pk, *args, **kwargs):
         order_Item = get_object_or_404(OrderItem, pk=pk)
         order_Item.delete()
-        return Response(status=HTTP_200_OK)
+        order, found = Order.objects.get_or_create(
+            user=self.request.user,
+            ordered=False
+        )
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
 
 
 class AddToCartView(APIView):
