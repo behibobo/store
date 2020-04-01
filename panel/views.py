@@ -79,6 +79,11 @@ class UploadSort(APIView):
         serializer = ItemImagesSerializer(product)
         return Response(serializer.data)
 
+class UploadDelete(DestroyAPIView):
+    def delete(self, request, pk, id, format=None):
+        image = ItemImage.objects.get(pk=id)
+        image.delete()
+        return Response(status=HTTP_200_OK)
 
 
 
