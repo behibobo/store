@@ -320,7 +320,8 @@ class ItemDetailSerializer(serializers.ModelSerializer):
 class AddressSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField()
     city_id = serializers.IntegerField()
-
+    city_name = serializers.SerializerMethodField()
+    province_name = serializers.SerializerMethodField()
     class Meta:
         model = Address
         fields = (
@@ -332,7 +333,15 @@ class AddressSerializer(serializers.ModelSerializer):
             'name',
             'mobile',
             'default',
+            'city_name',
+            'province_name',
         )
+    
+    def get_province_name(self, obj):
+        return obj.city.province.name
+    
+    def get_city_name(self, obj):
+        return obj.city.name
 
 
 class PaymentSerializer(serializers.ModelSerializer):
