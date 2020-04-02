@@ -239,7 +239,10 @@ class Address(models.Model):
     address = models.CharField(max_length=100)
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
     zip = models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    mobile = models.CharField(max_length=100, blank=True, null=True)
     default = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.user.username
