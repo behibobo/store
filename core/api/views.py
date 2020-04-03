@@ -336,29 +336,29 @@ class AddressList(APIView):
 
 class AddressDetail(APIView):
     permission_classes = (IsAuthenticated, )
-    def get_object(self, pk, id):
+    def get_object(self, pk):
         try:
-            return Address.objects.get(pk=id)
+            return Address.objects.get(pk=pk)
         except Address.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, id,format=None):
-        address = self.get_object(pk, id)
+    def get(self, request, pk, format=None):
+        address = self.get_object(pk)
         serializer = AddressSerializer(address)
         return Response(serializer.data)
 
 
-    def put(self, request, pk, id, format=None):
+    def put(self, request, pk, format=None):
         permission_classes = (IsAuthenticated, )
-        address = self.get_object(pk, id)
+        address = self.get_object(pk)
         serializer = AddressSerializer(address, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, id, format=None):
-        address = self.get_object(pk, id)
+    def delete(self, request, pk, format=None):
+        address = self.get_object(pk)
         address.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
