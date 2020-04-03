@@ -22,7 +22,7 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
 
         order, found = Order.objects.get_or_create(
-            user=user.id,
+            user=user,
             ordered=False
         )
 
