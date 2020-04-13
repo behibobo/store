@@ -56,7 +56,7 @@ class Seo(models.Model):
 class Brand(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField(allow_unicode=True)
-    image = models.CharField(max_length=300)
+    image = models.CharField(max_length=300, blank=True, null=True)
     display = models.BooleanField(default=True)
 
     def __str__(self):
