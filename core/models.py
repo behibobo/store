@@ -55,7 +55,7 @@ class Seo(models.Model):
 
 class Brand(models.Model):
     name = models.CharField(max_length=150)
-    slug = models.SlugField()
+    slug = models.SlugField(allow_unicode=True)
     image = models.CharField(max_length=300)
     display = models.BooleanField(default=True)
 
@@ -64,7 +64,7 @@ class Brand(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=150)
-    slug = models.SlugField()
+    slug = models.SlugField(allow_unicode=True)
     order = models.IntegerField(default=1)
     image = models.CharField(max_length=300 ,blank=True, null=True,)
     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE, related_name="children")
@@ -88,7 +88,7 @@ class Item(models.Model):
     name = models.CharField(max_length=150)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products",)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products",)
-    slug = models.SlugField()
+    slug = models.SlugField(allow_unicode=True)
     description = models.TextField()
 
     def __str__(self):
