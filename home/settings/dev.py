@@ -2,7 +2,7 @@
 
 from .base import *
 
-ALLOWED_HOSTS += ['api.irantechnosanat.com','127.0.0.1', '192.168.1.105', '178.63.238.103']
+ALLOWED_HOSTS += ['api.irantechnosanat.com','127.0.0.1', '192.168.1.105', '194.5.195.63']
 DEBUG = True
 
 WSGI_APPLICATION = 'home.wsgi.dev.application'
