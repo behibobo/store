@@ -89,7 +89,7 @@ class Item(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products",)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products",)
     slug = models.SlugField(allow_unicode=True)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True,)
 
     def __str__(self):
         return self.name
