@@ -25,10 +25,12 @@ from .views import (
     CategoryFilters,
     UserList,
     ProvinceList,
-    CityList
+    CityList,
+    HomeList,
 )
 
 urlpatterns = [
+    path('home/', HomeList.as_view(), name='home-list'),
     path('user-id/', UserIDView.as_view(), name='user-id'),
     path('users/', UserList.as_view(), name='users'),
     path('provinces/', ProvinceList.as_view(), name='provinces'),

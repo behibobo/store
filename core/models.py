@@ -90,6 +90,7 @@ class Item(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products",)
     slug = models.SlugField(allow_unicode=True)
     description = models.TextField(blank=True, null=True,)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -228,7 +229,6 @@ class Order(models.Model):
 
 class Province(models.Model):
     name = models.CharField(max_length=200)
-
 class City(models.Model):
     province = models.ForeignKey(Province,
                              on_delete=models.CASCADE)    

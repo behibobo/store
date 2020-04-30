@@ -521,3 +521,15 @@ class SliderList(APIView):
         sliders = sliders.order_by('order')
         serializer = SliderSerializer(sliders, many=True)
         return Response(serializer.data)
+
+
+class HomeList(APIView):
+    def get(self, request, format=None):
+        latest_items = Item.objects.order_by('created_at')[:10]
+        popular_categories = Category.objects.all()[:10]
+        popular_brands = Brand.objects.all()[:10]
+        return JsonResponse({
+            "latest_products": ItemSerializer(latest_items, many=True).data,
+            "popular_categories": CategorySerializer(popular_categories, many=True).data,
+            "popular_brands": BrandSerializer(popular_brands, many=True).data
+        }, safe=False, status=HTTP_200_OK)

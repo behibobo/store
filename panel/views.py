@@ -15,6 +15,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework import status
+import csv
+import os
+from home.settings.base import BASE_DIR
+
 from .serializers import (
     ItemSerializer,
     CategorySerializer,
@@ -31,7 +35,33 @@ from .serializers import (
     SliderSerializer,
     ItemOptionSerializer,
 )
-from core.models import Item, CategorySpec, ItemSpec, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider, ItemOption
+from core.models import Item, CategorySpec, ItemSpec, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider, ItemOption, Province, City
+
+
+class ImportCities(APIView):
+    def get(self, request, format=None):
+        province_path = os.path.join(BASE_DIR, "province.csv")
+        city_path = os.path.join(BASE_DIR, "city.csv")
+        Province.objects.all().delete()
+        City.objects.all().delete()
+        with open(province_path) as f:
+            reader = csv.reader(f)
+            for row in reader:
+                province = Province.objects.create(
+                    name=row[1],
+                    )
+                with open(city_path) as ff:
+                    rreader = csv.reader(ff)
+                    for rrow in rreader: 
+                        if rrow[1] == row[0]:
+                            city = City.objects.create(
+                                province_id = province.id,
+                                name=rrow[3],
+                            )
+
+        return Response([], status=status.HTTP_201_CREATED)
+
+
 
 class UploadList(APIView):
     def post(self, request, format=None):
