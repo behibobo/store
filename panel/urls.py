@@ -25,12 +25,10 @@ from .views import (
     SliderToggle,
     SliderSort,
     ItemOptionList,
-    ImportCities,
 )
 
 urlpatterns = [
     path('options/', OptionList.as_view(), name='admin-option'),
-    path('import_cities/', ImportCities.as_view(), name='admin-import-cities'),
     path('specs/', SpecList.as_view(), name='admin-specs'),
     path('values/', ValueList.as_view(), name='admin-values'),
     path('options/<int:pk>/', OptionDetail.as_view(), name='admin-option-get'),
