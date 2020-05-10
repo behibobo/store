@@ -493,14 +493,18 @@ class KeywordSearch(ListAPIView):
         return items[:int(self.request.query_params.get('limit', 10))]
 
 class WishlistToggle(APIView):
+    permission_classes = (IsAuthenticated, )
     def get(self, request, slug, format=None):
-        w = Wishlist.objects.filter(item__slug=slug)
+        user_id = request.user.id
+
+        w = Wishlist.objects.filter(item__slug=slug).filter(user_id=user_id)
         if w:
             w.delete()
             return Response({'wishlist': False}, status=HTTP_200_OK)
         w = Wishlist()
         item = Item.objects.get(slug=slug)
         w.item_id = item.id
+        w.user_id = user_id
         w.save()
         return Response({'wishlist': True}, status=HTTP_200_OK)
 

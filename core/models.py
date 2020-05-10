@@ -151,6 +151,7 @@ class ItemOption(models.Model):
         return self.item.name
 
 class Wishlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='items')
 
 
