@@ -24,6 +24,7 @@ from core.models import Item, OrderItem, Order,Category, Brand
 from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
     PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer, ItemSpecSerializer,
+    CompareListSerializer,
 )
 from panel.serializers import (
     SliderSerializer, ProvinceSerializer, CitySerializer,
@@ -556,6 +557,14 @@ class SameCategory(APIView):
         return Response({ "result": flag },status=HTTP_200_OK)
 
 
+class CompareList(APIView):
+    permission_classes = (IsAuthenticated, )
+    def post(self, request, format=None):
+        data = request.data
+        ids = data["product_ids"]
+        items = Item.objects.filter(pk__in=ids)
+        serializer = CompareListSerializer(items, many=True)
+        return Response(serializer.data)
 
 
 

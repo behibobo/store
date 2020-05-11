@@ -389,3 +389,50 @@ class ItemSpecSerializer(serializers.ModelSerializer):
             'spec',
             'value',
         )
+
+class CompareListSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField(read_only=True)
+    category_id = serializers.IntegerField()
+    brand_id = serializers.IntegerField()
+    variation = serializers.SerializerMethodField()
+    specs = serializers.SerializerMethodField()
+    wishlist = serializers.SerializerMethodField()
+    class Meta:
+        model = Item
+        fields = (
+            'id',
+            'name',
+            'category',
+            'category_id',
+            'brand',
+            'brand_id',
+            'slug',
+            'description',
+            'image',
+            'variation',
+            'wishlist',
+            'specs',
+        )
+
+    def get_category(self, obj):
+        return SingleCategorySerializer(obj.category).data
+
+    def get_brand(self, obj):
+        return BrandSerializer(obj.brand).data
+
+    def get_image(self, obj):
+        return ItemImageSerializer(obj.images.order_by('order').first()).data
+
+    def get_variation(self, obj):
+        variant = obj.variations.order_by('order').first()
+        if variant:
+            return VariationSerializer(variant).data
+        return None
+
+    def get_wishlist(self, obj):
+        return Wishlist.objects.filter(item_id=obj.id).exists()
+    
+    def get_specs(self, obj):
+        return ItemSpecSerializer(ItemSpec.objects.filter(item_id = obj.id), many=True).data
