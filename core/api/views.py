@@ -378,6 +378,8 @@ class CategoryList(APIView):
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
+
+
 class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
@@ -537,3 +539,24 @@ class HomeList(APIView):
             "popular_categories": CategorySerializer(popular_categories, many=True).data,
             "popular_brands": BrandSerializer(popular_brands, many=True).data
         }, safe=False, status=HTTP_200_OK)
+
+
+class SameCategory(APIView):
+    permission_classes = (IsAuthenticated, )
+    def post(self, request, format=None):
+        flag = True
+        data = request.data
+        ids = data["product_ids"]
+        first_item = Item.objects.get(pk=ids[0])
+        for id in ids:
+            temp = Item.objects.get(pk=id)
+            if temp.category_id != first_item.category_id:
+                flag = False 
+                break
+        return Response({ "result": flag },status=HTTP_200_OK)
+
+
+
+
+
+

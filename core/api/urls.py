@@ -27,6 +27,7 @@ from .views import (
     ProvinceList,
     CityList,
     HomeList,
+    SameCategory,
 )
 
 urlpatterns = [
@@ -59,5 +60,6 @@ urlpatterns = [
          OrderQuantityUpdateView.as_view(), name='order-item-update'),
     path('payments/', PaymentListView.as_view(), name='payment-list'),
     path('sliders/', SliderList.as_view(), name='slider-list'),
+    path('same_category/', SameCategory.as_view(), name='same-category'),
 
 ]
