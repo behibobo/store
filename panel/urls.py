@@ -25,6 +25,8 @@ from .views import (
     SliderToggle,
     SliderSort,
     ItemOptionList,
+    ArticleDetail,
+    ArticleList,
 )
 
 urlpatterns = [
@@ -34,6 +36,8 @@ urlpatterns = [
     path('options/<int:pk>/', OptionDetail.as_view(), name='admin-option-get'),
     path('categories/', CategoryList.as_view(), name='admin-category'),
     path('categories/<int:pk>/', CategoryDetail.as_view(), name='admin-category-get'),
+    path('articles/', ArticleList.as_view(), name='admin-articles'),
+    path('articles/<int:pk>/', ArticleDetail.as_view(), name='admin-article-get'),
     path('products/', ItemList.as_view(), name='admin-items'),
     path('products/<int:pk>/', ItemDetail.as_view(), name='admin-item-get'),
     path('products/<int:pk>/variations/', VariationList.as_view(), name='admin-product-variations'),

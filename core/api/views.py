@@ -27,7 +27,7 @@ from .serializers import (
     CompareListSerializer,
 )
 from panel.serializers import (
-    SliderSerializer, ProvinceSerializer, CitySerializer,
+    SliderSerializer, ProvinceSerializer, CitySerializer, ArticleSerializer,
 )
 from core.models import (
     Item, Wishlist, OrderItem,
@@ -35,7 +35,7 @@ from core.models import (
     Payment, Coupon, Refund,
     UserProfile, Variation,
     ItemVariation, Slider, ItemOption,
-    Province,City
+    Province,City, Article,
     )
 
 
@@ -567,5 +567,19 @@ class CompareList(APIView):
         return Response(serializer.data)
 
 
+class ArticleList(APIView):
+    # permission_classes = (IsAuthenticated, )
+    def get(self, request, format=None):
+        items = Article.objects.all()
+        serializer = ArticleSerializer(items, many=True)
+        return Response(serializer.data)
 
-
+class ArticleDetail(APIView):
+    # permission_classes = (IsAuthenticated, )
+    def get(self, request, pk, format=None):
+        try:
+            item = Article.objects.get(pk=pk)
+        except Article.DoesNotExist:
+            raise Http404
+        serializer = ArticleSerializer(item)
+        return Response(serializer.data)

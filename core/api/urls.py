@@ -29,6 +29,8 @@ from .views import (
     HomeList,
     SameCategory,
     CompareList,
+    ArticleList,
+    ArticleDetail,
 )
 
 urlpatterns = [
@@ -63,5 +65,7 @@ urlpatterns = [
     path('sliders/', SliderList.as_view(), name='slider-list'),
     path('same_category/', SameCategory.as_view(), name='same-category'),
     path('compare_list/', CompareList.as_view(), name='compare-list'),
+    path('articles/', ArticleList.as_view(), name='articles'),
+    path('articles/<pk>/', ArticleDetail.as_view(), name='article'),
 
 ]

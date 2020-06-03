@@ -2,9 +2,10 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article
 )
 
+from jalali_date import datetime2jalali, date2jalali
 
 
 class UploadSerializer(serializers.ModelSerializer):
@@ -25,6 +26,22 @@ class ItemImageSerializer(serializers.ModelSerializer):
             'order',
             'image'
         )
+
+class ArticleSerializer(serializers.ModelSerializer):
+    shamsi_date = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Article
+        fields = (
+            'id',
+            'title',
+            'body',
+            'created_at',
+            'shamsi_date',
+        )
+    def get_shamsi_date(self, obj):
+        return datetime2jalali(obj.created_at).strftime('%Y/%m/%d %H:%M:%S')
+
+
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province

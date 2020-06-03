@@ -73,6 +73,13 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Article(models.Model):
+    title = models.CharField(max_length=300)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.title
 
 class CategorySpec(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='specs')
@@ -151,7 +158,7 @@ class ItemOption(models.Model):
         return self.item.name
 
 class Wishlist(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='items')
 
 
