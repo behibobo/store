@@ -41,7 +41,9 @@ class ItemImageSerializer(serializers.ModelSerializer):
         model = ItemImage
         fields = (
             'id',
-            'image'
+            'image',
+            'alt',
+            'title'
         )
 
 class SingleCategorySerializer(serializers.ModelSerializer):

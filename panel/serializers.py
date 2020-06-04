@@ -24,11 +24,13 @@ class ItemImageSerializer(serializers.ModelSerializer):
             'id',
             'item_id',
             'order',
-            'image'
+            'image',
+            'alt',
+            'title',
         )
 
 class SeoSerializer(serializers.ModelSerializer):
-    item_id = serializers.SerializerMethodField()
+    # item_id = serializers.SerializerMethodField()
     class Meta:
         model = Seo
         fields = (
@@ -40,23 +42,34 @@ class SeoSerializer(serializers.ModelSerializer):
             'description',
             'extra',
         )
-    def get_item_id(self, obj):
-        return obj.item_id
+    # def get_item_id(self, obj):
+    #     return obj.item_id
 
 class ArticleSerializer(serializers.ModelSerializer):
     shamsi_date = serializers.SerializerMethodField(read_only=True)
+    seo = serializers.SerializerMethodField()
+
     class Meta:
         model = Article
         fields = (
             'id',
             'title',
             'body',
+            'image',
             'created_at',
             'shamsi_date',
+            'seo',
         )
+
     def get_shamsi_date(self, obj):
         return datetime2jalali(obj.created_at).strftime('%Y/%m/%d %H:%M:%S')
 
+    def get_seo(self, obj):
+        seo = Seo.objects.filter(item_id=obj.id).filter(item_type='article').first()
+        if seo:
+            return SeoSerializer(seo).data
+        else:
+            return None
 
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:

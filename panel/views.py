@@ -191,6 +191,15 @@ class ArticleList(APIView):
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+                seo_data['item_type'] = "article"
+                seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

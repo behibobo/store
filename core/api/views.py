@@ -570,7 +570,7 @@ class CompareList(APIView):
 class ArticleList(APIView):
     # permission_classes = (IsAuthenticated, )
     def get(self, request, format=None):
-        items = Article.objects.all()
+        items = Article.objects.all().order_by('-created_at')
         serializer = ArticleSerializer(items, many=True)
         return Response(serializer.data)
 

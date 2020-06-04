@@ -77,6 +77,7 @@ class Category(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=300)
     body = models.TextField()
+    image = models.CharField(max_length=300, blank=True, null=True,)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -121,6 +122,8 @@ class Item(models.Model):
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='images')
     image = models.CharField(max_length=300)
+    alt = models.CharField(max_length=300, blank=True, null=True,)
+    title = models.CharField(max_length=300, blank=True, null=True,)
     order = models.IntegerField(default=1)
 
     def __str__(self):
