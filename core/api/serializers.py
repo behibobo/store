@@ -3,8 +3,9 @@ from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from core.models import (
     Address, ItemImage, Category, Option, Wishlist, Brand, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, ItemSpec,
+    Payment, ItemSpec, Seo,
 )
+from panel.serializers import SeoSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -169,6 +170,7 @@ class SingleItemSerializer(serializers.ModelSerializer):
     variations = serializers.SerializerMethodField()
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
+    seo = serializers.SerializerMethodField()
     class Meta:
         model = Item
         fields = (
@@ -183,6 +185,7 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'images',
             'variations',
             'wishlist',
+            'seo'
         )
 
     def get_category(self, obj):
@@ -200,6 +203,12 @@ class SingleItemSerializer(serializers.ModelSerializer):
     def get_wishlist(self, obj):
         return Wishlist.objects.filter(item_id=obj.id).exists()
 
+    def get_seo(self, obj):
+        seo = Seo.objects.filter(item_id=obj.id).filter(item_type='item').first()
+        if seo:
+            return SeoSerializer(seo).data
+        else:
+            return None
 
 class ItemImagesSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField(read_only=True)

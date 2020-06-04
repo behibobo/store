@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo
 )
 
 from jalali_date import datetime2jalali, date2jalali
@@ -26,6 +26,22 @@ class ItemImageSerializer(serializers.ModelSerializer):
             'order',
             'image'
         )
+
+class SeoSerializer(serializers.ModelSerializer):
+    item_id = serializers.SerializerMethodField()
+    class Meta:
+        model = Seo
+        fields = (
+            'id',
+            'item_id',
+            'item_type',
+            'title',
+            'keywords',
+            'description',
+            'extra',
+        )
+    def get_item_id(self, obj):
+        return obj.item_id
 
 class ArticleSerializer(serializers.ModelSerializer):
     shamsi_date = serializers.SerializerMethodField(read_only=True)
@@ -126,6 +142,7 @@ class ItemSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
     wishlist = serializers.SerializerMethodField()
+    seo = serializers.SerializerMethodField()
     class Meta:
         model = Item
         fields = (
@@ -140,6 +157,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'images',
             'variations',
             'wishlist',
+            'seo',
         )
 
     def get_category(self, obj):
@@ -154,6 +172,12 @@ class ItemSerializer(serializers.ModelSerializer):
     def get_variations(self, obj):
         return VariationSerializer(obj.variations.order_by('order').all(), many=True).data
 
+    def get_seo(self, obj):
+        seo = Seo.objects.filter(item_id=obj.id).filter(item_type='item').first()
+        if seo:
+            return SeoSerializer(seo).data
+        else:
+            return None
 
     def get_wishlist(self, obj):
         return Wishlist.objects.filter(item_id=obj.id).exists()

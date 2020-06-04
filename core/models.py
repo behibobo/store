@@ -45,6 +45,7 @@ class Spec(models.Model):
 
 class Seo(models.Model):
     item_id = models.PositiveIntegerField()
+    item_type = models.CharField(max_length=150, blank=True, null=True)
     title = models.CharField(max_length=150, blank=True, null=True)
     keywords = models.CharField(max_length=1000, blank=True, null=True)
     description = models.CharField(max_length=400, blank=True, null=True)

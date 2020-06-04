@@ -35,8 +35,9 @@ from .serializers import (
     SliderSerializer,
     ItemOptionSerializer,
     ArticleSerializer,
+    SeoSerializer,
 )
-from core.models import Item, CategorySpec, ItemSpec, Article, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider, ItemOption, Province, City
+from core.models import Item, CategorySpec, ItemSpec, Article, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider, ItemOption, Province, City, Seo
 
 
 # class ImportCities(APIView):
@@ -281,6 +282,15 @@ class ItemList(APIView):
         serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+                seo_data['item_type'] = "item"
+                seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
