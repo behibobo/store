@@ -27,7 +27,7 @@ from .serializers import (
     CompareListSerializer,
 )
 from panel.serializers import (
-    SliderSerializer, ProvinceSerializer, CitySerializer, ArticleSerializer,
+    SliderSerializer, ProvinceSerializer, CitySerializer, ArticleSerializer, PageSerializer, SettingSerializer
 )
 from core.models import (
     Item, Wishlist, OrderItem,
@@ -35,7 +35,7 @@ from core.models import (
     Payment, Coupon, Refund,
     UserProfile, Variation,
     ItemVariation, Slider, ItemOption,
-    Province,City, Article,
+    Province,City, Article, Page, Setting,
     )
 
 
@@ -576,10 +576,28 @@ class ArticleList(APIView):
 
 class ArticleDetail(APIView):
     # permission_classes = (IsAuthenticated, )
-    def get(self, request, pk, format=None):
+    def get(self, request, slug, format=None):
         try:
-            item = Article.objects.get(pk=pk)
+            item = Article.objects.get(slug=slug)
         except Article.DoesNotExist:
             raise Http404
         serializer = ArticleSerializer(item)
+        return Response(serializer.data)
+
+
+class PageList(APIView):
+    # permission_classes = (IsAuthenticated, )
+    def get(self, request, format=None):
+        items = Page.objects.all()
+        serializer = PageSerializer(items, many=True)
+        return Response(serializer.data)
+
+class PageDetail(APIView):
+    # permission_classes = (IsAuthenticated, )
+    def get(self, request, slug, format=None):
+        try:
+            item = Page.objects.get(slug=slug)
+        except Page.DoesNotExist:
+            raise Http404
+        serializer = PageSerializer(item)
         return Response(serializer.data)

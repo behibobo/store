@@ -36,8 +36,38 @@ from .serializers import (
     ItemOptionSerializer,
     ArticleSerializer,
     SeoSerializer,
+    PageSerializer,
+    SettingSerializer
 )
-from core.models import Item, CategorySpec, ItemSpec, Article, Brand, Spec, Variation, ItemImage, Upload, Category, OrderItem, Option, Order, Address, Payment, Coupon, Refund, UserProfile, Variation, ItemVariation, Slider, ItemOption, Province, City, Seo
+from core.models import (
+    Item, 
+    CategorySpec, 
+    ItemSpec, 
+    Article, 
+    Brand, 
+    Spec, 
+    Variation, 
+    ItemImage, 
+    Upload, 
+    Category, 
+    OrderItem, 
+    Option, 
+    Order, 
+    Address, 
+    Payment, 
+    Coupon, 
+    Refund, 
+    UserProfile,
+    Variation, 
+    ItemVariation, 
+    Slider, 
+    ItemOption, 
+    Province, 
+    City, 
+    Seo, 
+    Page, 
+    Setting,
+    )
 
 
 # class ImportCities(APIView):
@@ -610,3 +640,69 @@ def modify_input_for_multiple_files(image):
     dict = {}
     dict['file_path'] = image
     return dict
+
+class SettingList(APIView):
+    def get(self, request, format=None):
+        setting = Setting.objects.first()
+
+        if not setting:
+            setting = Setting()
+            setting.save()
+        serializer = SettingSerializer(setting, many=False)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        setting = Setting.objects.first()
+
+        if not setting:
+            setting = Setting()
+            setting.save()
+
+        serializer = SettingSerializer(setting, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PageList(APIView):
+    def get(self, request, format=None):
+        pages = Page.objects.all()
+        serializer = PageSerializer(pages, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = PageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class PageDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return Page.objects.get(pk=pk)
+        except Page.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        page = self.get_object(pk)
+        serializer = PageSerializer(page)
+        return Response(serializer.data)
+
+
+    def put(self, request, pk, format=None):
+        page = self.get_object(pk)
+        serializer = PageSerializer(page, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        page = self.get_object(pk)
+        page.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

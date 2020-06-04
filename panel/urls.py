@@ -27,6 +27,9 @@ from .views import (
     ItemOptionList,
     ArticleDetail,
     ArticleList,
+    SettingList,
+    PageList,
+    PageDetail,
 )
 
 urlpatterns = [
@@ -57,4 +60,7 @@ urlpatterns = [
     path('sliders/<int:pk>/', SliderDetail.as_view(), name='admin-slider-get'),
     path('sliders/<int:pk>/toggle', SliderToggle.as_view(), name='admin-slider-toggle'),
     path('slider/sort/', SliderSort.as_view(), name='admin-slider-order'),
+    path('setting/', SettingList.as_view(), name='admin-setting'),
+    path('pages/', PageList.as_view(), name='admin-pages'),
+    path('pages/<int:pk>/', PageDetail.as_view(), name='admin-page-get'),
 ]

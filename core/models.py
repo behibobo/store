@@ -78,6 +78,7 @@ class Article(models.Model):
     title = models.CharField(max_length=300)
     body = models.TextField()
     image = models.CharField(max_length=300, blank=True, null=True,)
+    slug = models.SlugField(allow_unicode=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -293,6 +294,28 @@ class Slider(models.Model):
 
     def __str__(self):
         return self.code
+
+class Setting(models.Model):
+    logo = models.CharField(max_length=300, blank=True, null=True)
+    title = models.CharField(max_length=300, blank=True, null=True)
+    keywords = models.CharField(max_length=300, blank=True, null=True)
+    description = models.CharField(max_length=300, blank=True, null=True)
+    ArticleCount = models.IntegerField(default=6)
+    ItemCount = models.IntegerField(default=6)
+
+    def __str__(self):
+        return self.title
+
+class Page(models.Model):
+    title = models.CharField(max_length=300, blank=True, null=True)
+    slug = models.SlugField(allow_unicode=True)
+    content = models.TextField()
+    image = models.CharField(max_length=300, blank=True, null=True)
+    url = models.CharField(max_length=300, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
 
 class Refund(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

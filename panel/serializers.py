@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page,
 )
 
 from jalali_date import datetime2jalali, date2jalali
@@ -56,6 +56,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'title',
             'body',
             'image',
+            'slug',
             'created_at',
             'shamsi_date',
             'seo',
@@ -268,4 +269,29 @@ class SliderSerializer(serializers.ModelSerializer):
             'display',
             'link',
             'image',
+        )
+
+class SettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Setting
+        fields = (
+            'id',
+            'logo',
+            'title',
+            'keywords',
+            'description',
+            'ArticleCount',
+            'ItemCount',
+        )
+
+class PageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = (
+            'id',
+            'title',
+            'slug',
+            'content',
+            'image',
+            'url',
         )

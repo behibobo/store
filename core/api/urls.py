@@ -31,6 +31,8 @@ from .views import (
     CompareList,
     ArticleList,
     ArticleDetail,
+    PageList,
+    PageDetail,
 )
 
 urlpatterns = [
@@ -66,6 +68,8 @@ urlpatterns = [
     path('same_category/', SameCategory.as_view(), name='same-category'),
     path('compare_list/', CompareList.as_view(), name='compare-list'),
     path('articles/', ArticleList.as_view(), name='articles'),
-    path('articles/<pk>/', ArticleDetail.as_view(), name='article'),
+    path('articles/<slug>/', ArticleDetail.as_view(), name='article'),
+    path('pages/', PageList.as_view(), name='pages'),
+    path('pages/<slug>/', PageDetail.as_view(), name='page'),
 
 ]
