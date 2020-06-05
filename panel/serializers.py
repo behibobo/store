@@ -285,6 +285,7 @@ class SettingSerializer(serializers.ModelSerializer):
         )
 
 class PageSerializer(serializers.ModelSerializer):
+    seo = serializers.SerializerMethodField()
     class Meta:
         model = Page
         fields = (
@@ -294,4 +295,12 @@ class PageSerializer(serializers.ModelSerializer):
             'content',
             'image',
             'url',
+            'seo',
         )
+
+    def get_seo(self, obj):
+        seo = Seo.objects.filter(item_id=obj.id).filter(item_type='page').first()
+        if seo:
+            return SeoSerializer(seo).data
+        else:
+            return None

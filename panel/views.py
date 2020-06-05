@@ -704,6 +704,16 @@ class PageList(APIView):
         serializer = PageSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+                seo_data['item_type'] = "page"
+                seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -728,6 +738,20 @@ class PageDetail(APIView):
         serializer = PageSerializer(page, data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+
+                seo = Seo.objects.filter(item_id=serializer.data['id']).filter(item_type='page').first()
+                if seo:
+                    seo_serializer = SeoSerializer(seo, data=seo_data)
+                else:
+                    seo_data['item_type'] = "page"
+                    seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
