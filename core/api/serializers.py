@@ -173,6 +173,7 @@ class SingleItemSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
     seo = serializers.SerializerMethodField()
+    specs = serializers.SerializerMethodField()
     class Meta:
         model = Item
         fields = (
@@ -187,11 +188,15 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'images',
             'variations',
             'wishlist',
+            'spec',
             'seo'
         )
 
     def get_category(self, obj):
         return SingleCategorySerializer(obj.category).data
+
+    def get_specs(self, obj):
+        return ItemSpecSerializer(ItemSpec.objects.filter(item_id = obj.id), many=True).data
 
     def get_brand(self, obj):
         return BrandSerializer(obj.brand).data
