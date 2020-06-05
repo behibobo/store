@@ -30,6 +30,8 @@ from .views import (
     SettingList,
     PageList,
     PageDetail,
+    MenuList,
+    MenuDetail,
 )
 
 urlpatterns = [
@@ -63,4 +65,6 @@ urlpatterns = [
     path('setting/', SettingList.as_view(), name='admin-setting'),
     path('pages/', PageList.as_view(), name='admin-pages'),
     path('pages/<int:pk>/', PageDetail.as_view(), name='admin-page-get'),
+    path('menus/', MenuList.as_view(), name='admin-menus'),
+    path('menus/<int:pk>/', MenuDetail.as_view(), name='admin-menu-get'),
 ]

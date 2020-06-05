@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page,
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page, Menu,
 )
 
 from jalali_date import datetime2jalali, date2jalali
@@ -304,3 +304,14 @@ class PageSerializer(serializers.ModelSerializer):
             return SeoSerializer(seo).data
         else:
             return None
+
+class MenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Menu
+        fields = (
+            'id',
+            'name',
+            'url',
+            'display',
+            'order'
+        )

@@ -316,6 +316,14 @@ class Page(models.Model):
     def __str__(self):
         return self.title
 
+class Menu(models.Model):
+    name = models.CharField(max_length=300, blank=True, null=True)
+    url = models.CharField(max_length=300, blank=True, null=True)
+    display = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
 
 class Refund(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
