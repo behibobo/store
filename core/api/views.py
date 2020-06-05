@@ -27,7 +27,7 @@ from .serializers import (
     CompareListSerializer,
 )
 from panel.serializers import (
-    SliderSerializer, ProvinceSerializer, CitySerializer, ArticleSerializer, PageSerializer, SettingSerializer
+    SliderSerializer, ProvinceSerializer, CitySerializer, ArticleSerializer, PageSerializer, SettingSerializer, MenuSerializer,
 )
 from core.models import (
     Item, Wishlist, OrderItem,
@@ -35,7 +35,7 @@ from core.models import (
     Payment, Coupon, Refund,
     UserProfile, Variation,
     ItemVariation, Slider, ItemOption,
-    Province,City, Article, Page, Setting,
+    Province,City, Article, Page, Setting, Menu,
     )
 
 
@@ -600,4 +600,12 @@ class PageDetail(APIView):
         except Page.DoesNotExist:
             raise Http404
         serializer = PageSerializer(item)
+        return Response(serializer.data)
+
+
+class MenuList(APIView):
+    # permission_classes = (IsAuthenticated, )
+    def get(self, request, format=None):
+        menu = Menu.objects.filter(display=True).order_by('order')
+        serializer = MenuSerializer(items, many=True)
         return Response(serializer.data)

@@ -33,6 +33,7 @@ from .views import (
     ArticleDetail,
     PageList,
     PageDetail,
+    MenuList
 )
 
 urlpatterns = [
@@ -71,5 +72,6 @@ urlpatterns = [
     path('articles/<slug>/', ArticleDetail.as_view(), name='article'),
     path('pages/', PageList.as_view(), name='pages'),
     path('pages/<slug>/', PageDetail.as_view(), name='page'),
+    path('menus/', MenuList.as_view(), name='menus'),
 
 ]
