@@ -607,5 +607,5 @@ class MenuList(APIView):
     # permission_classes = (IsAuthenticated, )
     def get(self, request, format=None):
         menu = Menu.objects.filter(display=True).order_by('order')
-        serializer = MenuSerializer(items, many=True)
+        serializer = MenuSerializer(menu, many=True)
         return Response(serializer.data)
