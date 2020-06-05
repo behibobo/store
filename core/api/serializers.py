@@ -188,7 +188,7 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'images',
             'variations',
             'wishlist',
-            'spec',
+            'specs',
             'seo'
         )
 
