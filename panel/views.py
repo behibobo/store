@@ -179,6 +179,15 @@ class CategoryList(APIView):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+                seo_data['item_type'] = "category"
+                seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -203,6 +212,21 @@ class CategoryDetail(APIView):
         serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+
+                seo = Seo.objects.filter(item_id=serializer.data['id']).filter(item_type='category').first()
+                if seo:
+                    seo_serializer = SeoSerializer(seo, data=seo_data)
+                else:
+                    seo_data['item_type'] = "category"
+                    seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -291,6 +315,15 @@ class BrandList(APIView):
         serializer = BrandSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+                seo_data['item_type'] = "brand"
+                seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -313,6 +346,20 @@ class BrandDetail(APIView):
         serializer = BrandSerializer(brand, data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            if "seo" in request.data:
+                seo_data = request.data["seo"]
+                seo_data['item_id'] = serializer.data['id']
+
+                seo = Seo.objects.filter(item_id=serializer.data['id']).filter(item_type='brand').first()
+                if seo:
+                    seo_serializer = SeoSerializer(seo, data=seo_data)
+                else:
+                    seo_data['item_type'] = "brand"
+                    seo_serializer = SeoSerializer(data=seo_data)
+                if seo_serializer.is_valid():
+                    seo_serializer.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

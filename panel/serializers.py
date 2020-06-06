@@ -108,6 +108,7 @@ class SpecSerializer(serializers.ModelSerializer):
         )
 
 class BrandSerializer(serializers.ModelSerializer):
+    seo = serializers.SerializerMethodField()
     class Meta:
         model = Brand
         fields = (
@@ -115,8 +116,16 @@ class BrandSerializer(serializers.ModelSerializer):
             'name',
             'slug',
             'display',
-            'image'
+            'image',
+            'seo',
         )
+
+    def get_seo(self, obj):
+        seo = Seo.objects.filter(item_id=obj.id).filter(item_type='brand').first()
+        if seo:
+            return SeoSerializer(seo).data
+        else:
+            return None
 
 class RecursiveField(serializers.Serializer):
     def to_representation(self, value):
@@ -125,6 +134,7 @@ class RecursiveField(serializers.Serializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     children = RecursiveField(many=True, read_only= True)
+    seo = serializers.SerializerMethodField()
     class Meta:
         model = Category
         fields = (
@@ -135,8 +145,16 @@ class CategorySerializer(serializers.ModelSerializer):
             'display',
             'parent',
             'image',
-            'children'
+            'children',
+            'seo',
         )
+
+    def get_seo(self, obj):
+        seo = Seo.objects.filter(item_id=obj.id).filter(item_type='category').first()
+        if seo:
+            return SeoSerializer(seo).data
+        else:
+            return None
 
 class SingleCategorySerializer(serializers.ModelSerializer):
     class Meta:
