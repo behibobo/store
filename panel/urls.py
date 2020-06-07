@@ -33,6 +33,7 @@ from .views import (
     MenuList,
     MenuDetail,
     TagList,
+    ItemUploadDetail,
 )
 
 urlpatterns = [
@@ -56,7 +57,7 @@ urlpatterns = [
     path('uploads/', UploadList.as_view(), name='admin-upload'),
     path('products/<int:pk>/uploads/', ItemUploadList.as_view(), name='admin-upload'),
     path('products/<int:pk>/uploads/sort/', UploadSort.as_view(), name='admin-upload-sort'),
-    path('products/<int:pk>/uploads/<int:id>/delete/', UploadDelete.as_view(), name='admin-upload-sort'),
+    path('products/<int:pk>/uploads/<int:id>/', ItemUploadDetail.as_view(), name='admin-upload-edit'),
     path('uploads/<int:pk>/', UploadDetail.as_view(), name='admin-upload-get'),
     path('categories/<int:pk>/specs/', CategorySpecList.as_view(), name='admin-category-specs'),
     path('categories/<int:pk>/specs/<int:id>/', CategorySpecDetail.as_view(), name='admin-category-specs-get'),

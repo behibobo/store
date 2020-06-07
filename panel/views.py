@@ -26,6 +26,7 @@ from .serializers import (
     UploadSerializer,
     BrandSerializer,
     ItemImagesSerializer,
+    ItemImageSerializer,
     OptionSerializer,
     SpecSerializer,
     VariationSerializer,
@@ -133,6 +134,34 @@ class ItemUploadList(APIView):
         serializer = ItemImagesSerializer(item)
         return Response(serializer.data)
 
+class ItemUploadDetail(APIView):
+    def get_object(self, pk, id):
+        try:
+            return ItemImage.objects.get(pk=id)
+        except Variation.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, id,format=None):
+        image = self.get_object(pk, id)
+        serializer = ItemImageSerializer(image)
+        return Response(serializer.data)
+
+
+    def put(self, request, pk, id, format=None):
+        image = self.get_object(pk, id)
+        serializer = ItemImageSerializer(image, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk, id, format=None):
+        upload = self.get_object(pk, id)
+        upload.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class UploadSort(APIView):
     def post(self, request, pk, format=None):
         uploads = request.data
@@ -170,6 +199,8 @@ class UploadDetail(APIView):
         upload = self.get_object(pk)
         upload.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 class CategoryList(APIView):
     def get(self, request, format=None):
@@ -614,6 +645,34 @@ class SpecList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SpecDetail(APIView):
+
+    def get_object(self, pk, id):
+        try:
+            return Variation.objects.get(pk=id)
+        except Variation.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, id,format=None):
+        spec = self.get_object(pk, id)
+        serializer = SpecSerializer(spec)
+        return Response(serializer.data)
+
+
+    def put(self, request, pk, id, format=None):
+        spec = self.get_object(pk, id)
+        serializer = SpecSerializer(spec, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, id, format=None):
+        variation = self.get_object(pk, id)
+        variation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ValueList(APIView):
     def get(self, request, format=None, *args, **kwagrs):
