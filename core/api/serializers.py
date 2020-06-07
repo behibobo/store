@@ -3,9 +3,9 @@ from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from core.models import (
     Address, ItemImage, Category, Option, Wishlist, Brand, UserProfile, Upload, Item, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, ItemSpec, Seo,
+    Payment, ItemSpec, Seo, Tag,
 )
-from panel.serializers import SeoSerializer
+from panel.serializers import SeoSerializer, TagsSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -76,6 +76,7 @@ class OptionSerializer(serializers.ModelSerializer):
 
 class BrandSerializer(serializers.ModelSerializer):
     seo = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Brand
         fields = (
@@ -85,12 +86,21 @@ class BrandSerializer(serializers.ModelSerializer):
             'display',
             'image',
             'seo',
+            'tags'
         )
 
     def get_seo(self, obj):
         seo = Seo.objects.filter(item_id=obj.id).filter(item_type='brand').first()
         if seo:
             return SeoSerializer(seo).data
+        else:
+            return None
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='brand')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
         else:
             return None
 
@@ -119,7 +129,10 @@ class ItemSerializer(serializers.ModelSerializer):
             'variation',
             'wishlist',
             'specs',
+
         )
+
+
 
     def get_category(self, obj):
         return SingleCategorySerializer(obj.category).data
@@ -183,6 +196,7 @@ class SingleItemSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField()
     brand_id = serializers.IntegerField()
     seo = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     specs = serializers.SerializerMethodField()
     class Meta:
         model = Item
@@ -199,7 +213,8 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'variations',
             'wishlist',
             'specs',
-            'seo'
+            'seo',
+            'tags'
         )
 
     def get_category(self, obj):
@@ -224,6 +239,14 @@ class SingleItemSerializer(serializers.ModelSerializer):
         seo = Seo.objects.filter(item_id=obj.id).filter(item_type='item').first()
         if seo:
             return SeoSerializer(seo).data
+        else:
+            return None
+    
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='item')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
         else:
             return None
 
@@ -392,7 +415,7 @@ class RecursiveField(serializers.Serializer):
 class CategorySerializer(serializers.ModelSerializer):
     children = RecursiveField(many=True, read_only= True)
     seo = serializers.SerializerMethodField()
-
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Category
         fields = (
@@ -405,6 +428,7 @@ class CategorySerializer(serializers.ModelSerializer):
             'image',
             'children',
             'seo',
+            'tags',
         )
 
     def get_seo(self, obj):
@@ -413,6 +437,15 @@ class CategorySerializer(serializers.ModelSerializer):
             return SeoSerializer(seo).data
         else:
             return None
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='category')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
+        else:
+            return None
+
 
 
 class ItemSpecSerializer(serializers.ModelSerializer):

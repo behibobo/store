@@ -32,12 +32,14 @@ from .views import (
     PageDetail,
     MenuList,
     MenuDetail,
+    TagList,
 )
 
 urlpatterns = [
     path('options/', OptionList.as_view(), name='admin-option'),
     path('specs/', SpecList.as_view(), name='admin-specs'),
     path('values/', ValueList.as_view(), name='admin-values'),
+    path('tags/', TagList.as_view(), name='admin-tags'),
     path('options/<int:pk>/', OptionDetail.as_view(), name='admin-option-get'),
     path('categories/', CategoryList.as_view(), name='admin-category'),
     path('categories/<int:pk>/', CategoryDetail.as_view(), name='admin-category-get'),

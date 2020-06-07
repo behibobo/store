@@ -2,11 +2,10 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page, Menu,
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page, Menu, Tag
 )
-
 from jalali_date import datetime2jalali, date2jalali
-
+import json
 
 class UploadSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,10 +44,33 @@ class SeoSerializer(serializers.ModelSerializer):
     # def get_item_id(self, obj):
     #     return obj.item_id
 
+class TagSerializer(serializers.ModelSerializer):
+    # item_id = serializers.SerializerMethodField()
+    class Meta:
+        model = Tag
+        fields = (
+            'id',
+            'item_id',
+            'item_type',
+            'name',
+        )
+    # def get_item_id(self, obj):
+    #     return obj.item_id
+
+class TagsSerializer(serializers.ModelSerializer):
+    # item_id = serializers.SerializerMethodField()
+    class Meta:
+        model = Tag
+        fields = (
+            'name',
+        )
+    # def get_item_id(self, obj):
+    #     return obj.item_id
+
 class ArticleSerializer(serializers.ModelSerializer):
     shamsi_date = serializers.SerializerMethodField(read_only=True)
     seo = serializers.SerializerMethodField()
-
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Article
         fields = (
@@ -60,6 +82,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'created_at',
             'shamsi_date',
             'seo',
+            'tags',
         )
 
     def get_shamsi_date(self, obj):
@@ -71,6 +94,15 @@ class ArticleSerializer(serializers.ModelSerializer):
             return SeoSerializer(seo).data
         else:
             return None
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='article')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
+        else:
+            return None
+
 
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -109,6 +141,7 @@ class SpecSerializer(serializers.ModelSerializer):
 
 class BrandSerializer(serializers.ModelSerializer):
     seo = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Brand
         fields = (
@@ -118,6 +151,7 @@ class BrandSerializer(serializers.ModelSerializer):
             'display',
             'image',
             'seo',
+            'tags'
         )
 
     def get_seo(self, obj):
@@ -127,6 +161,15 @@ class BrandSerializer(serializers.ModelSerializer):
         else:
             return None
 
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='brand')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
+        else:
+            return None
+
+
 class RecursiveField(serializers.Serializer):
     def to_representation(self, value):
         serializer = self.parent.parent.__class__(value, context=self.context)
@@ -135,6 +178,7 @@ class RecursiveField(serializers.Serializer):
 class CategorySerializer(serializers.ModelSerializer):
     children = RecursiveField(many=True, read_only= True)
     seo = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Category
         fields = (
@@ -147,6 +191,7 @@ class CategorySerializer(serializers.ModelSerializer):
             'image',
             'children',
             'seo',
+            'tags'
         )
 
     def get_seo(self, obj):
@@ -155,6 +200,15 @@ class CategorySerializer(serializers.ModelSerializer):
             return SeoSerializer(seo).data
         else:
             return None
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='category')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
+        else:
+            return None
+
 
 class SingleCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -175,6 +229,7 @@ class ItemSerializer(serializers.ModelSerializer):
     brand_id = serializers.IntegerField()
     wishlist = serializers.SerializerMethodField()
     seo = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Item
         fields = (
@@ -190,6 +245,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'variations',
             'wishlist',
             'seo',
+            'tags',
         )
 
     def get_category(self, obj):
@@ -208,6 +264,14 @@ class ItemSerializer(serializers.ModelSerializer):
         seo = Seo.objects.filter(item_id=obj.id).filter(item_type='item').first()
         if seo:
             return SeoSerializer(seo).data
+        else:
+            return None
+    
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='item')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
         else:
             return None
 
@@ -304,6 +368,7 @@ class SettingSerializer(serializers.ModelSerializer):
 
 class PageSerializer(serializers.ModelSerializer):
     seo = serializers.SerializerMethodField()
+    tag = serializers.SerializerMethodField()
     class Meta:
         model = Page
         fields = (
@@ -314,12 +379,21 @@ class PageSerializer(serializers.ModelSerializer):
             'image',
             'url',
             'seo',
+            'tags',
         )
 
     def get_seo(self, obj):
         seo = Seo.objects.filter(item_id=obj.id).filter(item_type='page').first()
         if seo:
             return SeoSerializer(seo).data
+        else:
+            return None
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(item_id=obj.id).filter(item_type='page')
+        names = [tag.name for tag in tags]
+        if tags:
+            return names
         else:
             return None
 

@@ -335,6 +335,16 @@ class Refund(models.Model):
         return self.pk
 
 
+class Tag(models.Model):
+    item_id = models.PositiveIntegerField()
+    item_type = models.CharField(max_length=150, blank=True, null=True)
+    title = models.CharField(max_length=150, blank=True, null=True)
+    name = models.CharField(max_length=150, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
+
 def userprofile_receiver(sender, instance, created, *args, **kwargs):
     if created:
         userprofile = UserProfile.objects.create(user=instance)

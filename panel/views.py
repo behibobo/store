@@ -39,6 +39,7 @@ from .serializers import (
     PageSerializer,
     SettingSerializer,
     MenuSerializer,
+    TagSerializer,
 )
 from core.models import (
     Item, 
@@ -69,6 +70,7 @@ from core.models import (
     Page, 
     Setting,
     Menu,
+    Tag,
     )
 
 
@@ -188,6 +190,14 @@ class CategoryList(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "category", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -226,6 +236,14 @@ class CategoryDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='category').delete()
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "category", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
 
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -255,6 +273,14 @@ class ArticleList(APIView):
                 seo_serializer = SeoSerializer(data=seo_data)
                 if seo_serializer.is_valid():
                     seo_serializer.save()
+
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "article", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -294,6 +320,15 @@ class ArticleDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='article').delete()
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "article", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -323,6 +358,14 @@ class BrandList(APIView):
                 seo_serializer = SeoSerializer(data=seo_data)
                 if seo_serializer.is_valid():
                     seo_serializer.save()
+
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "brand", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -360,6 +403,15 @@ class BrandDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='brand').delete()
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "brand", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -392,6 +444,14 @@ class ItemList(APIView):
                 seo_serializer = SeoSerializer(data=seo_data)
                 if seo_serializer.is_valid():
                     seo_serializer.save()
+
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "item", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -429,6 +489,14 @@ class ItemDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='item').delete()
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "item", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
 
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -762,6 +830,13 @@ class PageList(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "page", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -800,6 +875,15 @@ class PageDetail(APIView):
                     seo_serializer = SeoSerializer(data=seo_data)
                 if seo_serializer.is_valid():
                     seo_serializer.save()
+
+            if "tags" in request.data:
+                tags = request.data["tags"]
+                Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='page').delete()
+                for tag in tags:
+                    tag_data = {"item_id": serializer.data['id'], "item_type": "page", "name": tag}
+                    tag_serializer = TagSerializer(data=tag_data)
+                    if tag_serializer.is_valid():
+                        tag_serializer.save()
 
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -851,3 +935,11 @@ class MenuDetail(APIView):
         menu = self.get_object(pk)
         menu.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TagList(APIView):
+    def get(self, request, format=None, *args, **kwagrs):
+        keyword = request.query_params.get('tag', "")
+        tags = Tag.objects.filter(name__startswith=keyword).distinct("name")
+        data = [tag.name for tag in tags]
+        return JsonResponse(data, safe=False)
