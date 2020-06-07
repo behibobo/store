@@ -34,11 +34,13 @@ from .views import (
     MenuDetail,
     TagList,
     ItemUploadDetail,
+    SpecDetail,
 )
 
 urlpatterns = [
     path('options/', OptionList.as_view(), name='admin-option'),
     path('specs/', SpecList.as_view(), name='admin-specs'),
+    path('specs/<int:pk>/', SpecDetail.as_view(), name='admin-specs-get'),
     path('values/', ValueList.as_view(), name='admin-values'),
     path('tags/', TagList.as_view(), name='admin-tags'),
     path('options/<int:pk>/', OptionDetail.as_view(), name='admin-option-get'),
