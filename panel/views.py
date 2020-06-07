@@ -213,7 +213,7 @@ class CategoryList(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
                 seo_data['item_type'] = "category"
@@ -221,7 +221,7 @@ class CategoryList(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 for tag in tags:
                     tag_data = {"item_id": serializer.data['id'], "item_type": "category", "name": tag}
@@ -254,7 +254,7 @@ class CategoryDetail(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
 
@@ -267,7 +267,7 @@ class CategoryDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='category').delete()
                 for tag in tags:
@@ -297,7 +297,7 @@ class ArticleList(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
                 seo_data['item_type'] = "article"
@@ -305,7 +305,7 @@ class ArticleList(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 for tag in tags:
                     tag_data = {"item_id": serializer.data['id'], "item_type": "article", "name": tag}
@@ -338,7 +338,7 @@ class ArticleDetail(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
 
@@ -351,7 +351,7 @@ class ArticleDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='article').delete()
                 for tag in tags:
@@ -382,7 +382,7 @@ class BrandList(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
                 seo_data['item_type'] = "brand"
@@ -390,7 +390,7 @@ class BrandList(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 for tag in tags:
                     tag_data = {"item_id": serializer.data['id'], "item_type": "brand", "name": tag}
@@ -421,7 +421,7 @@ class BrandDetail(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
 
@@ -434,7 +434,7 @@ class BrandDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='brand').delete()
                 for tag in tags:
@@ -468,7 +468,7 @@ class ItemList(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
                 seo_data['item_type'] = "item"
@@ -476,7 +476,7 @@ class ItemList(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 for tag in tags:
                     tag_data = {"item_id": serializer.data['id'], "item_type": "item", "name": tag}
@@ -507,7 +507,7 @@ class ItemDetail(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
 
@@ -520,7 +520,7 @@ class ItemDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='item').delete()
                 for tag in tags:
@@ -881,7 +881,7 @@ class PageList(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
                 seo_data['item_type'] = "page"
@@ -889,7 +889,7 @@ class PageList(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 for tag in tags:
                     tag_data = {"item_id": serializer.data['id'], "item_type": "page", "name": tag}
@@ -922,7 +922,7 @@ class PageDetail(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            if "seo" in request.data:
+            if "seo" in request.data and request.data["seo"] is not None:
                 seo_data = request.data["seo"]
                 seo_data['item_id'] = serializer.data['id']
 
@@ -935,7 +935,7 @@ class PageDetail(APIView):
                 if seo_serializer.is_valid():
                     seo_serializer.save()
 
-            if "tags" in request.data:
+            if "tags" in request.data and request.data["tags"] is not None:
                 tags = request.data["tags"]
                 Tag.objects.filter(item_id=serializer.data['id']).filter(item_type='page').delete()
                 for tag in tags:
