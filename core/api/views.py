@@ -389,7 +389,11 @@ class CategoryDetail(ListAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        items = Item.objects.filter(category__slug=self.kwargs.get('slug'))
+        category = Category.objects.get(slug=self.kwargs.get('slug'))
+        categorie_ids = Category.objects.filter(parent_id=category.id).values_list('id', flat=True)
+        categorie_ids = (list(categorie_ids))
+        categorie_ids.append(category.id)
+        items = Item.objects.filter(category__id__in=categorie_ids)
         if self.request.GET.get("filters"):
             item_ids = items.values_list('id', flat=True)
             filters = self.request.GET.getlist("filters")
@@ -440,7 +444,12 @@ class CategoryDetail(ListAPIView):
 class CategoryFilters(APIView):
     def get(self, request, slug, format=None):
         category = Category.objects.get(slug=slug)
-        items = Item.objects.filter(category_id = category.id)
+        categorie_ids = Category.objects.filter(parent_id=category.id).values_list('id', flat=True)
+        categorie_ids = (list(categorie_ids))
+        categorie_ids.append(category.id)
+
+
+        items = Item.objects.filter(category_id__in = categorie_ids)
         options = {}
         values = []
         keys = []
