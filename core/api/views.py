@@ -390,7 +390,7 @@ class CategoryDetail(ListAPIView):
 
     def get_queryset(self):
         category = Category.objects.get(slug=self.kwargs.get('slug'))
-        all_cats = category.get_all_children(include_self=False)
+        all_cats = category.get_all_children()
         category_ids = Category.objects.filter(all_cats).values_list("id", flat=True)
 
         items = Item.objects.filter(category__id__in=category_ids)
@@ -444,7 +444,7 @@ class CategoryDetail(ListAPIView):
 class CategoryFilters(APIView):
     def get(self, request, slug, format=None):
         category = Category.objects.get(slug=slug)
-        all_cats = category.get_all_children(include_self=False)
+        all_cats = category.get_all_children()
         category_ids = Category.objects.filter(all_cats).values_list("id", flat=True)
 
         items = Item.objects.filter(category_id__in = category_ids)
