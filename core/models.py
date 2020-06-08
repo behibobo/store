@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
+from django.db.models import Q
 
 
 CATEGORY_CHOICES = (
@@ -63,6 +64,7 @@ class Brand(models.Model):
     def __str__(self):
         return self.name
 
+
 class Category(models.Model):
     name = models.CharField(max_length=150)
     slug = models.SlugField(allow_unicode=True, max_length=1000, unique=True)
@@ -73,6 +75,16 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_all_children(self, include_self=True):
+        children = Q(pk=0)
+        if include_self:
+            children |= Q(pk=self.pk)
+        for u in self.children.all():
+            _r = u.get_all_children(include_self=True)
+            if _r:
+                children |= _r
+        return children
 
 class Article(models.Model):
     title = models.CharField(max_length=300)
