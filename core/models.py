@@ -5,6 +5,7 @@ from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
 from django.db.models import Q
+from autoslug import AutoSlugField
 
 
 CATEGORY_CHOICES = (
@@ -57,7 +58,7 @@ class Seo(models.Model):
 
 class Brand(models.Model):
     name = models.CharField(max_length=150)
-    slug = models.SlugField(allow_unicode=True, max_length=1000, unique=True)
+    slug = AutoSlugField(allow_unicode=True, max_length=1000, unique=True)
     image = models.CharField(max_length=300, blank=True, null=True,)
     display = models.BooleanField(default=True)
 
@@ -67,7 +68,7 @@ class Brand(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=150)
-    slug = models.SlugField(allow_unicode=True, max_length=1000, unique=True)
+    slug = AutoSlugField(allow_unicode=True, max_length=1000, unique=True)
     order = models.IntegerField(default=1)
     image = models.CharField(max_length=300 ,blank=True, null=True,)
     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE, related_name="children")
@@ -90,7 +91,7 @@ class Article(models.Model):
     title = models.CharField(max_length=300)
     body = models.TextField()
     image = models.CharField(max_length=300, blank=True, null=True,)
-    slug = models.SlugField(allow_unicode=True, max_length=1000, unique=True)
+    slug = AutoSlugField(allow_unicode=True, max_length=1000, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -110,7 +111,7 @@ class Item(models.Model):
     name = models.CharField(max_length=150)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products",)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products",)
-    slug = models.SlugField(allow_unicode=True, max_length=1000, unique=True)
+    slug = AutoSlugField(allow_unicode=True, max_length=1000, unique=True)
     description = models.TextField(blank=True, null=True,)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -320,7 +321,7 @@ class Setting(models.Model):
 
 class Page(models.Model):
     title = models.CharField(max_length=300, blank=True, null=True)
-    slug = models.SlugField(allow_unicode=True, max_length=1000, unique=True)
+    slug = AutoSlugField(allow_unicode=True, max_length=1000, unique=True)
     content = models.TextField()
     image = models.CharField(max_length=300, blank=True, null=True)
     url = models.CharField(max_length=300, blank=True, null=True)
