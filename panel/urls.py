@@ -35,6 +35,7 @@ from .views import (
     TagList,
     ItemUploadDetail,
     SpecDetail,
+    CategoryOrder,
 )
 
 urlpatterns = [
@@ -46,6 +47,7 @@ urlpatterns = [
     path('options/<int:pk>/', OptionDetail.as_view(), name='admin-option-get'),
     path('categories/', CategoryList.as_view(), name='admin-category'),
     path('categories/<int:pk>/', CategoryDetail.as_view(), name='admin-category-get'),
+    path('categories/reorder/', CategoryOrder.as_view(), name='admin-category-reorder'),
     path('articles/', ArticleList.as_view(), name='admin-articles'),
     path('articles/<int:pk>/', ArticleDetail.as_view(), name='admin-article-get'),
     path('products/', ItemList.as_view(), name='admin-items'),

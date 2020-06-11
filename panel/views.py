@@ -233,6 +233,17 @@ class CategoryList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CategoryOrder(APIView):
+    def post(self, request, format=None):
+        items = request.data
+        print(items[0]['parentId'])
+        for item in items:
+            cat = Category.objects.get(pk=item['id'])
+            cat.parent_id = item['parentId']
+            cat.order = item['order']
+            cat.save()
+
+        return Response([], status=status.HTTP_201_CREATED)
 
 class CategoryDetail(APIView):
 
