@@ -368,7 +368,7 @@ class SettingSerializer(serializers.ModelSerializer):
 
 class PageSerializer(serializers.ModelSerializer):
     seo = serializers.SerializerMethodField()
-    tag = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Page
         fields = (
