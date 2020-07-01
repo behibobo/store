@@ -10,8 +10,6 @@ from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView
 )
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -468,24 +466,13 @@ class UserIDView(APIView):
     def get(self, request, *args, **kwargs):
         return Response({'userID': request.user.id}, status=HTTP_200_OK)
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size_query_param = 'limit'
-
-
-class ItemPagination(ListAPIView):
-    serializer_class = ItemSerializer
-    pagination_class = StandardResultsSetPagination
-
-    def get_queryset(self,  *args, **kwargs):
-        return Item.objects.order_by('-created_at')
-
 
 class ItemList(APIView):
-    # pagination_class = StandardResultsSetPagination
-    # def get(self, request, format=None):
-    #     items = Item.objects.order_by('-created_at')
-    #     serializer = ItemSerializer(items, many=True)
-    #     return Response(serializer.data)
+
+    def get(self, request, format=None):
+        items = Item.objects.order_by('-created_at')
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
 
     def post(self, request, format=None):
         serializer = ItemSerializer(data=request.data)
