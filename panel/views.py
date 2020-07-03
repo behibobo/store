@@ -482,8 +482,11 @@ class ItemFilter(APIView):
         serializer = ItemSerializer(paginator.page(page_number) , many=True, context={'request':request})
         # -----------------------------------------------------------
 
-        response = Response(serializer.data, status=status.HTTP_200_OK)
-        return response
+        # response = Response(serializer.data, status=status.HTTP_200_OK)
+        data = {}
+        data["items"] = serializer.data
+        data["total_items"] = Item.objects.count()
+        return JsonResponse(data, safe=False)
 
 
 class ItemList(APIView):
