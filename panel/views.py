@@ -10,6 +10,10 @@ from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView
 )
+from django.core.paginator import Paginator
+
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -43,32 +47,32 @@ from .serializers import (
     TagSerializer,
 )
 from core.models import (
-    Item, 
-    CategorySpec, 
-    ItemSpec, 
-    Article, 
-    Brand, 
-    Spec, 
-    Variation, 
-    ItemImage, 
-    Upload, 
-    Category, 
-    OrderItem, 
-    Option, 
-    Order, 
-    Address, 
-    Payment, 
-    Coupon, 
-    Refund, 
+    Item,
+    CategorySpec,
+    ItemSpec,
+    Article,
+    Brand,
+    Spec,
+    Variation,
+    ItemImage,
+    Upload,
+    Category,
+    OrderItem,
+    Option,
+    Order,
+    Address,
+    Payment,
+    Coupon,
+    Refund,
     UserProfile,
-    Variation, 
-    ItemVariation, 
-    Slider, 
-    ItemOption, 
-    Province, 
-    City, 
-    Seo, 
-    Page, 
+    Variation,
+    ItemVariation,
+    Slider,
+    ItemOption,
+    Province,
+    City,
+    Seo,
+    Page,
     Setting,
     Menu,
     Tag,
@@ -89,7 +93,7 @@ from core.models import (
 #                     )
 #                 with open(city_path) as ff:
 #                     rreader = csv.reader(ff)
-#                     for rrow in rreader: 
+#                     for rrow in rreader:
 #                         if rrow[1] == row[0]:
 #                             city = City.objects.create(
 #                                 province_id = province.id,
@@ -98,7 +102,8 @@ from core.models import (
 
 #         return Response([], status=status.HTTP_201_CREATED)
 
-
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
 class UploadList(APIView):
     def post(self, request, format=None):
@@ -466,14 +471,22 @@ class UserIDView(APIView):
     def get(self, request, *args, **kwargs):
         return Response({'userID': request.user.id}, status=HTTP_200_OK)
 
+class ItemFilter(APIView):
+    def post(self, request, format=None):
+        items = Item.objects.order_by('-created_at')
+        paginator = PageNumberPagination()
+        page_number = request.data.get('page_number', 1)
+        page_size = request.data.get('page_size', 10)
+
+        paginator = Paginator(items , page_size)
+        serializer = ItemSerializer(paginator.page(page_number) , many=True, context={'request':request})
+        # -----------------------------------------------------------
+
+        response = Response(serializer.data, status=status.HTTP_200_OK)
+        return response
+
 
 class ItemList(APIView):
-
-    def get(self, request, format=None):
-        items = Item.objects.order_by('-created_at')
-        serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
-
     def post(self, request, format=None):
         serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
@@ -494,7 +507,7 @@ class ItemList(APIView):
                     tag_serializer = TagSerializer(data=tag_data)
                     if tag_serializer.is_valid():
                         tag_serializer.save()
-            
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
