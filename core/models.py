@@ -6,7 +6,8 @@ from django.shortcuts import reverse
 from django_countries.fields import CountryField
 from django.db.models import Q
 from autoslug import AutoSlugField
-
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill, ResizeToFill
 
 CATEGORY_CHOICES = (
     ('S', 'Shirt'),
@@ -31,6 +32,7 @@ class UserProfile(models.Model):
 
 class Upload(models.Model):
     file_path = models.ImageField(blank=True)
+    thumbnail = ImageSpecField(source='file_path', processors=[ResizeToFill(128, 128)], format='PNG', options={'quality': 70})
 
     def __str__(self):
         return self.file_path

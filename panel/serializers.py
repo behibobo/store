@@ -8,11 +8,13 @@ from jalali_date import datetime2jalali, date2jalali
 import json
 
 class UploadSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.ImageField(read_only=True)
     class Meta:
         model = Upload
         fields = (
             'id',
-            'file_path'
+            'file_path',
+            'thumbnail'
         )
 
 
