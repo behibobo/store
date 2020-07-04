@@ -474,6 +474,20 @@ class UserIDView(APIView):
 class ItemFilter(APIView):
     def post(self, request, format=None):
         items = Item.objects.order_by('-created_at')
+
+        category_id = request.data.get('category_id', None)
+        brand_id = request.data.get('brand_id', None)
+        name = request.data.get('name', None)
+
+        if category_id is not None:
+            items = items.filter(category_id=category_id)
+        
+        if brand_id is not None:
+            items = items.filter(brand_id=brand_id)
+        
+        if name is not None:
+            items = items.filter(name__contains=name)
+
         paginator = PageNumberPagination()
         page_number = request.data.get('page_number', 1)
         page_size = request.data.get('page_size', 10)
