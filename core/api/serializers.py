@@ -42,6 +42,7 @@ class ItemImageSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'image',
+            'thumbnail',
             'alt',
             'title'
         )

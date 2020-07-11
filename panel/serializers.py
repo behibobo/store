@@ -26,6 +26,7 @@ class ItemImageSerializer(serializers.ModelSerializer):
             'item_id',
             'order',
             'image',
+            'thumbnail',
             'alt',
             'title',
         )

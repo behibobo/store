@@ -138,6 +138,7 @@ class Item(models.Model):
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='images')
     image = models.CharField(max_length=300)
+    thumbnail = models.CharField(max_length=300, null=True, blank=True,)
     alt = models.CharField(max_length=300, blank=True, null=True,)
     title = models.CharField(max_length=300, blank=True, null=True,)
     order = models.IntegerField(default=1)
