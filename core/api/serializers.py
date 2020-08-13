@@ -87,7 +87,8 @@ class BrandSerializer(serializers.ModelSerializer):
             'display',
             'image',
             'seo',
-            'tags'
+            'tags',
+            'doc'
         )
 
     def get_seo(self, obj):
@@ -130,6 +131,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'variation',
             'wishlist',
             'specs',
+            'doc'
 
         )
 
@@ -215,7 +217,8 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'wishlist',
             'specs',
             'seo',
-            'tags'
+            'tags',
+            'doc'
         )
 
     def get_category(self, obj):

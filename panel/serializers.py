@@ -2,7 +2,7 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from core.models import (
     Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page, Menu, Tag
+    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page, Menu, Tag, UploadFile,
 )
 from jalali_date import datetime2jalali, date2jalali
 import json
@@ -15,6 +15,14 @@ class UploadSerializer(serializers.ModelSerializer):
             'id',
             'file_path',
             'thumbnail'
+        )
+
+class UploadFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadFile
+        fields = (
+            'id',
+            'file_path',
         )
 
 
@@ -154,7 +162,8 @@ class BrandSerializer(serializers.ModelSerializer):
             'display',
             'image',
             'seo',
-            'tags'
+            'tags',
+            'doc',
         )
 
     def get_seo(self, obj):
@@ -249,6 +258,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'wishlist',
             'seo',
             'tags',
+            'doc',
         )
 
     def get_category(self, obj):

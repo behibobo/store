@@ -30,6 +30,10 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+
+class UploadFile(models.Model):
+    file_path = models.FileField(blank=True)
+
 class Upload(models.Model):
     file_path = models.ImageField(blank=True)
     thumbnail = ImageSpecField(source='file_path', processors=[ResizeToFill(128, 128)], format='PNG', options={'quality': 70})
@@ -63,7 +67,7 @@ class Brand(models.Model):
     slug = models.CharField(max_length=1000, unique=True)
     image = models.CharField(max_length=300, blank=True, null=True,)
     display = models.BooleanField(default=True)
-
+    doc = models.CharField(max_length=300, blank=True, null=True,)
     def __str__(self):
         return self.name
 
@@ -114,6 +118,7 @@ class Item(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products",)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products",)
     slug = models.CharField(max_length=1000, unique=True)
+    doc = models.CharField(max_length=300, blank=True, null=True,)
     description = models.TextField(blank=True, null=True,)
     created_at = models.DateTimeField(auto_now_add=True)
 

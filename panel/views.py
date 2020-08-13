@@ -28,6 +28,7 @@ from .serializers import (
     CategorySerializer,
     SingleCategorySerializer,
     UploadSerializer,
+    UploadFileSerializer,
     BrandSerializer,
     ItemImagesSerializer,
     ItemImageSerializer,
@@ -76,6 +77,7 @@ from core.models import (
     Setting,
     Menu,
     Tag,
+    UploadFile,
     )
 
 
@@ -108,6 +110,14 @@ class StandardResultsSetPagination(PageNumberPagination):
 class UploadList(APIView):
     def post(self, request, format=None):
         serializer = UploadSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UploadFileList(APIView):
+    def post(self, request, format=None):
+        serializer = UploadFileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
