@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
             model = UserProfile
-            fields = ('username', 'status')
+            fields = ('username', 'status', 'credit_based_user', 'credit', 'credit_confirmed')
             read_only_fields = ('email',)
 
 class StringSerializer(serializers.StringRelatedField):

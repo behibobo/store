@@ -26,6 +26,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     status = models.IntegerField(default=1)
+    credit_based_user = models.BooleanField(default=False)
+    credit = models.IntegerField(null=True, blank=True)
+    credit_confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
