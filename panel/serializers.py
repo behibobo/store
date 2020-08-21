@@ -203,7 +203,8 @@ class CategorySerializer(serializers.ModelSerializer):
             'image',
             'children',
             'seo',
-            'tags'
+            'tags',
+            'svg_icon'
         )
 
     def get_seo(self, obj):

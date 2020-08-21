@@ -79,6 +79,7 @@ class Category(models.Model):
     image = models.CharField(max_length=300 ,blank=True, null=True,)
     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE, related_name="children")
     display = models.BooleanField(default=True)
+    svg_icon = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
