@@ -545,10 +545,12 @@ class HomeList(APIView):
         categories = Category.objects.filter(display=True).filter(parent__isnull=True)
         articles = Article.objects.all().order_by('-created_at')[0:10]
         brands = Brand.objects.all()
+        sliders = Slider.objects.all()
         return JsonResponse({
             "latest_products": SingleCategoryAndProductSerializer(categories, many=True).data,
             "latest_articles": ArticleSerializer(articles, many=True).data,
             "brands": BrandSerializer(brands, many=True).data,
+            "sliders": SliderSerializer(sliders, many=True).data,
         })
 
 
