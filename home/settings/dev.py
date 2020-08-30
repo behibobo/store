@@ -1,5 +1,3 @@
-'''Use this for development'''
-
 from .base import *
 
 ALLOWED_HOSTS += ['api.irantechnosanat.com','127.0.0.1', '192.168.1.105', '194.5.195.63']
@@ -32,3 +30,4 @@ DEFAULT_CHARSET = 'utf-8'
 # STRIPE_SECRET_KEY = config('STRIPE_TEST_SECRET_KEY')
 STRIPE_PUBLIC_KEY = ""
 STRIPE_SECRET_KEY = ""
+

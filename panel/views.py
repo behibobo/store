@@ -486,11 +486,17 @@ class ItemFilter(APIView):
         items = Item.objects.order_by('-created_at')
 
         category_id = request.data.get('category_id', None)
+
+        
+
         brand_id = request.data.get('brand_id', None)
         name = request.data.get('name', None)
 
         if category_id is not None:
-            items = items.filter(category_id=category_id)
+            category = Category.objects.get(id=category_id)
+            all_cats = category.get_all_children()
+            category_ids = Category.objects.filter(all_cats).values_list("id", flat=True)
+            items = items.filter(category__id__in=category_ids)
         
         if brand_id is not None:
             items = items.filter(brand_id=brand_id)

@@ -24,7 +24,7 @@ from core.models import Item, OrderItem, Order,Category, Brand
 from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
     PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer, ItemSpecSerializer,
-    CompareListSerializer,
+    CompareListSerializer, SingleCategoryAndProductSerializer
 )
 from panel.serializers import (
     SliderSerializer, ProvinceSerializer, CitySerializer, ArticleSerializer, PageSerializer, SettingSerializer, MenuSerializer,
@@ -444,10 +444,12 @@ class CategoryDetail(ListAPIView):
 class CategoryFilters(APIView):
     def get(self, request, slug, format=None):
         category = Category.objects.get(slug=slug)
+        print(slug)
         all_cats = category.get_all_children()
         category_ids = Category.objects.filter(all_cats).values_list("id", flat=True)
-
+        print(category_ids)
         items = Item.objects.filter(category_id__in = category_ids)
+
         options = {}
         values = []
         keys = []
@@ -539,14 +541,12 @@ class SliderList(APIView):
 
 class HomeList(APIView):
     def get(self, request, format=None):
-        latest_items = Item.objects.order_by('created_at')[:10]
-        popular_categories = Category.objects.all()[:10]
-        popular_brands = Brand.objects.all()[:10]
+
+        categories = Category.objects.all()
+
         return JsonResponse({
-            "latest_products": ItemSerializer(latest_items, many=True).data,
-            "popular_categories": CategorySerializer(popular_categories, many=True).data,
-            "popular_brands": BrandSerializer(popular_brands, many=True).data
-        }, safe=False, status=HTTP_200_OK)
+            "latest_products": SingleCategoryAndProductSerializer(categories, many=True).data
+        })
 
 
 class SameCategory(APIView):
