@@ -192,7 +192,11 @@ class SingleCategoryAndProductSerializer(serializers.ModelSerializer):
         )
     
     def get_items(self, obj):
-        return SimpleItemSerializer(obj.products.all()[0:10], many=True).data
+        category = Category.objects.get(pk=obj.id)
+        all_cats = category.get_all_children()
+        category_ids = Category.objects.filter(all_cats).values_list("id", flat=True)
+        items = Item.objects.filter(category__id__in=category_ids).order_by('-created_at')[0:10]
+        return SimpleItemSerializer(items, many=True).data
 
 class CartItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()

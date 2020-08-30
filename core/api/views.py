@@ -542,7 +542,7 @@ class SliderList(APIView):
 class HomeList(APIView):
     def get(self, request, format=None):
 
-        categories = Category.objects.all()
+        categories = Category.objects.filter(display=True).filter(parent__isnull=True)
 
         return JsonResponse({
             "latest_products": SingleCategoryAndProductSerializer(categories, many=True).data
