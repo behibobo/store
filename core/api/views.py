@@ -24,7 +24,7 @@ from core.models import Item, OrderItem, Order,Category, Brand
 from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
     PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer, ItemSpecSerializer,
-    CompareListSerializer, SingleCategoryAndProductSerializer
+    CompareListSerializer, SingleCategoryAndProductSerializer, BrandSerializer,
 )
 from panel.serializers import (
     SliderSerializer, ProvinceSerializer, CitySerializer, ArticleSerializer, PageSerializer, SettingSerializer, MenuSerializer,
@@ -543,9 +543,12 @@ class HomeList(APIView):
     def get(self, request, format=None):
 
         categories = Category.objects.filter(display=True).filter(parent__isnull=True)
-
+        articles = Article.objects.all().order_by('-created_at')[0:10]
+        brands = Brand.objects.all()
         return JsonResponse({
-            "latest_products": SingleCategoryAndProductSerializer(categories, many=True).data
+            "latest_products": SingleCategoryAndProductSerializer(categories, many=True).data,
+            "latest_articles": ArticleSerializer(articles, many=True).data,
+            "brands": BrandSerializer(brands, many=True).data,
         })
 
 
