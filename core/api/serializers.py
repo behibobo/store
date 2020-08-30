@@ -161,6 +161,24 @@ class ItemSerializer(serializers.ModelSerializer):
     def get_specs(self, obj):
         return ItemSpecSerializer(ItemSpec.objects.filter(item_id = obj.id), many=True).data
 
+
+class SimpleItemSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Item
+        fields = (
+            'id',
+            'name',
+            'slug',
+            'description',
+            'image',
+
+        )
+
+    def get_image(self, obj):
+        return ItemImageSerializer(obj.images.order_by('order').first()).data
+
+
 class SingleCategoryAndProductSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
     class Meta:
@@ -174,7 +192,7 @@ class SingleCategoryAndProductSerializer(serializers.ModelSerializer):
         )
     
     def get_items(self, obj):
-        return ItemSerializer(obj.products.all()[0:15], many=True).data
+        return SimpleItemSerializer(obj.products.all()[0:10], many=True).data
 
 class CartItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()

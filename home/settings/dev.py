@@ -11,7 +11,7 @@ DATABASES = {
         'NAME': 'store',
         'USER': 'behzad',
         'PASSWORD': 'p@ssw0rd',
-        'HOST': '127.0.0.1',
+        'HOST': '194.5.195.63',
         'PORT': '',
     }
 }
