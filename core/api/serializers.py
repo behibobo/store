@@ -54,7 +54,8 @@ class SingleCategorySerializer(serializers.ModelSerializer):
             'id',
             'name',
             'slug',
-            'image'
+            'image',
+            'svg_icon'
         )
 
 
