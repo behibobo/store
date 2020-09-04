@@ -180,6 +180,7 @@ class SingleCategoryAndProductSerializer(serializers.ModelSerializer):
             'slug',
             'image',
             'items',
+            'svg_icon'
         )
     
     def get_items(self, obj):
