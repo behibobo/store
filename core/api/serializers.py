@@ -61,16 +61,6 @@ class SingleCategorySerializer(serializers.ModelSerializer):
 
 
 
-class SingleCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = (
-            'id',
-            'name',
-            'slug',
-            'image'
-        )
-
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
