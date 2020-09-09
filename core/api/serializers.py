@@ -163,6 +163,7 @@ class SimpleItemSerializer(serializers.ModelSerializer):
             'slug',
             'description',
             'image',
+            'doc'
 
         )
 
