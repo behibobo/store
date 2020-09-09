@@ -643,3 +643,26 @@ class MenuList(APIView):
         menu = Menu.objects.filter(display=True).order_by('order')
         serializer = MenuSerializer(menu, many=True)
         return Response(serializer.data)
+
+class CompareList(APIView):
+    def post(self, request, *args, **kwargs):
+        ids = request.data.get('item_ids', None)
+        res = True
+        if len(ids) == 1:
+            pass
+        elif len(ids) > 1:
+            first_item = Item.objects.get(pk=ids[0])
+            last_item = Item.objects.get(pk=ids[-1])
+
+            if first_item.category_id != last_item.category_id:
+                res = False
+        else:
+            pass 
+        return Response(data = res, status=HTTP_200_OK)
+
+class CompareListItems(APIView):
+    def post(self, request, *args, **kwargs):
+        ids = request.data.get('item_ids', None)
+        items = Item.objects.filter(pk__in=ids)
+        serializer = SingleItemSerializer(items, many=True)
+        return Response(serializer.data)
