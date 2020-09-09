@@ -254,7 +254,7 @@ class CategoryOrder(APIView):
         count = 1
         for item in items:
             cat = Category.objects.get(pk=int(item['id']))
-            cat.parent_id = int(item['parentId'])
+            cat.parent_id = item['parentId']
             cat.order = count
             cat.save()
             count += 1
