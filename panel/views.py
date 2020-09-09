@@ -252,9 +252,9 @@ class CategoryOrder(APIView):
     def post(self, request, format=None):
         items = request.data
         for item in items:
-            cat = Category.objects.get(pk=item['id'])
-            cat.parent_id = item['parentId']
-            cat.order = item['order']
+            cat = Category.objects.get(pk=int(item['id']))
+            cat.parent_id = int(item['parentId'])
+            cat.order = int(item['order'])
             cat.save()
 
         return Response([], status=status.HTTP_201_CREATED)
