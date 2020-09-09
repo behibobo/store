@@ -251,7 +251,6 @@ class CategoryList(APIView):
 class CategoryOrder(APIView):
     def post(self, request, format=None):
         items = request.data
-        print(items[0]['parentId'])
         for item in items:
             cat = Category.objects.get(pk=item['id'])
             cat.parent_id = item['parentId']
