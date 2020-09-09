@@ -466,12 +466,9 @@ class BrandDetail(ListAPIView):
 class CategoryFilters(APIView):
     def get(self, request, slug, format=None):
         category = Category.objects.get(slug=slug)
-        print(slug)
         all_cats = category.get_all_children()
         category_ids = Category.objects.filter(all_cats).values_list("id", flat=True)
-        print(category_ids)
         items = Item.objects.filter(category_id__in = category_ids)
-
         options = {}
         values = []
         keys = []
