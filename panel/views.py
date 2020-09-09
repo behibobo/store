@@ -251,11 +251,13 @@ class CategoryList(APIView):
 class CategoryOrder(APIView):
     def post(self, request, format=None):
         items = request.data
+        count = 1
         for item in items:
             cat = Category.objects.get(pk=int(item['id']))
             cat.parent_id = int(item['parentId'])
-            cat.order = int(item['order'])
+            cat.order = count
             cat.save()
+            count += 1
 
         return Response([], status=status.HTTP_201_CREATED)
 
