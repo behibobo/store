@@ -643,7 +643,8 @@ class MenuList(APIView):
 
 class CompareList(APIView):
     def post(self, request, *args, **kwargs):
-        ids = request.data.get('item_ids', None)
+        print(request.data)
+        ids = request.POST.getlist('item_ids', [])
         res = True
         if len(ids) == 1:
             pass
