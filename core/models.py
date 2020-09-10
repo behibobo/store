@@ -99,10 +99,13 @@ class Category(models.Model):
 
     def get_top_most_parent(self):
         parents = Category.objects.filter(parent__isnull=True)
+        res = 0
         for item in parents:
             ids = list(Category.objects.filter(item.get_all_children()).values_list("id", flat=True))
             if self.id in ids:
-                return item.id
+                res = item.id
+                break
+        return res
 
 class Article(models.Model):
     title = models.CharField(max_length=300)

@@ -492,7 +492,7 @@ class CategoryFilters(APIView):
 class BrandList(APIView):
     def get(self, request, format=None):
         permission_classes = (IsAuthenticated, )
-        brands = Brand.objects.all()
+        brands = Brand.objects.all().order_by('name')
         serializer = BrandSerializer(brands, many=True)
         return Response(serializer.data)
 
@@ -656,8 +656,8 @@ class CompareList(APIView):
             
             last_item = Item.objects.get(pk=ids[-1])
             last_category = Category.objects.get(pk=last_item.category_id)
-            lid = first_category.get_top_most_parent()
-            
+            lid = last_category.get_top_most_parent()
+            print(fid, lid)
             if fid == lid:
                 res = True
             else:
