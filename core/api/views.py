@@ -561,10 +561,11 @@ class SliderList(APIView):
 class HomeList(APIView):
     def get(self, request, format=None):
 
-        categories = Category.objects.filter(display=True).filter(parent__isnull=True)
+        categories = Category.objects.filter(display=True).filter(parent__isnull=True).order_by('order')
         articles = Article.objects.all().order_by('-created_at')[0:10]
         brands = Brand.objects.all()
-        sliders = Slider.objects.all()
+        sliders = Slider.objects.filter(display=True).order_by('order')
+
         return JsonResponse({
             "latest_products": SingleCategoryAndProductSerializer(categories, many=True).data,
             "latest_articles": ArticleSerializer(articles, many=True).data,
@@ -644,18 +645,29 @@ class MenuList(APIView):
 class CompareList(APIView):
     def post(self, request, *args, **kwargs):
         ids = request.data.get('item_ids', [])
-        print(ids)
         res = True
         if len(ids) == 1:
             res = True
         elif len(ids) > 1:
-            first_item = Item.objects.get(pk=ids[0])
-            last_item = Item.objects.get(pk=ids[-1])
 
-            if first_item.category_id != last_item.category_id:
+            first_item = Item.objects.get(pk=ids[0])
+            first_category = Category.objects.get(pk=first_item.category_id)
+            first_ids = list(Category.objects.filter(first_category.get_all_children()).values_list("id", flat=True))
+            
+            last_item = Item.objects.get(pk=ids[-1])
+            last_category = Category.objects.get(pk=last_item.category_id)
+            last_ids = list(Category.objects.filter(last_category.get_all_children()).values_list("id", flat=True))
+            
+            print(first_ids)
+            print(last_ids)
+            r = list(set(first_ids) & set(last_ids))
+            if len(r) > 0:
+                res = True
+            else:
                 res = False
         else:
-            res = False 
+            res = False
+           
         return Response(data = res, status=HTTP_200_OK)
 
 class CompareListItems(APIView):
