@@ -652,16 +652,13 @@ class CompareList(APIView):
 
             first_item = Item.objects.get(pk=ids[0])
             first_category = Category.objects.get(pk=first_item.category_id)
-            first_ids = list(Category.objects.filter(first_category.get_all_children()).values_list("id", flat=True))
+            fid = first_category.get_top_most_parent()
             
             last_item = Item.objects.get(pk=ids[-1])
             last_category = Category.objects.get(pk=last_item.category_id)
-            last_ids = list(Category.objects.filter(last_category.get_all_children()).values_list("id", flat=True))
+            lid = first_category.get_top_most_parent()
             
-            print(first_ids)
-            print(last_ids)
-            r = list(set(first_ids) & set(last_ids))
-            if len(r) > 0:
+            if fid == lid:
                 res = True
             else:
                 res = False
