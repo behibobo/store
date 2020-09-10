@@ -644,10 +644,10 @@ class MenuList(APIView):
 class CompareList(APIView):
     def post(self, request, *args, **kwargs):
         print(request.data)
-        ids = request.POST.getlist('item_ids', [])
+        ids = request.POST.get('item_ids', [])
         res = True
         if len(ids) == 1:
-            pass
+            res = True
         elif len(ids) > 1:
             first_item = Item.objects.get(pk=ids[0])
             last_item = Item.objects.get(pk=ids[-1])
@@ -655,7 +655,7 @@ class CompareList(APIView):
             if first_item.category_id != last_item.category_id:
                 res = False
         else:
-            pass 
+            res = False 
         return Response(data = res, status=HTTP_200_OK)
 
 class CompareListItems(APIView):
