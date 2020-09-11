@@ -669,16 +669,15 @@ class CompareListItems(APIView):
 
 class Breadcrump(APIView):
     def get(self, request,slug, *args, **kwargs):
-        ids = []
         category = Category.objects.get(slug=slug)
         has_parent = True
+        res = []
         while has_parent:
             if category.parent is not None:
-                ids.append(category.parent_id)
+                res.append({"slug": category.slug, "name": category.name })
                 category = Category.objects.get(pk=category.parent_id)
             else:
                 has_parent = False
+        res.reverse()
+        return Response(data = res, status=HTTP_200_OK)
 
-        items = Category.objects.filter(id__in=ids)
-        serializer = CategorySerializer(items, many=True)
-        return Response(serializer.data)
