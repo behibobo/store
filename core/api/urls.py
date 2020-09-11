@@ -41,5 +41,6 @@ urlpatterns = [
     path('pages/', PageList.as_view(), name='pages'),
     path('pages/<slug>/', PageDetail.as_view(), name='page'),
     path('menus/', MenuList.as_view(), name='menus'),
+    path('breadcrump/<slug>/', Breadcrump.as_view(), name='Breadcrump'),
 
 ]

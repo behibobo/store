@@ -20,7 +20,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from core.models import Item, OrderItem, Order,Category, Brand
+from core.models import *
 from .serializers import (
     ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer,
     PaymentSerializer, CategorySerializer, BrandSerializer, SingleItemSerializer, ItemSpecSerializer,
@@ -31,14 +31,6 @@ from panel.serializers import (
     ArticleSerializer, PageSerializer, SettingSerializer, 
     MenuSerializer,
 )
-from core.models import (
-    Item, Wishlist, OrderItem,
-    Order, ItemSpec, Address,
-    Payment, Coupon, Refund,
-    UserProfile, Variation,
-    ItemVariation, Slider, ItemOption,
-    Province,City, Article, Page, Setting, Menu,
-    )
 
 
 import stripe
@@ -676,8 +668,17 @@ class CompareListItems(APIView):
 
 
 class Breadcrump(APIView):
-    def get(self, request,pk, *args, **kwargs):
-        category = Category.objects.filter(pk=pk)
-        ids = category.get_top_most_parent()
-        serializer = SingleItemSerializer(items, many=True)
+    def get(self, request,slug, *args, **kwargs):
+        ids = []
+        category = Category.objects.get(slug=slug)
+        has_parent = True
+        while has_parent:
+            if category.parent is not None:
+                ids.append(category.parent_id)
+                category = Category.objects.get(pk=category.parent_id)
+            else:
+                has_parent = False
+
+        items = Category.objects.filter(id__in=ids)
+        serializer = CategorySerializer(items, many=True)
         return Response(serializer.data)
