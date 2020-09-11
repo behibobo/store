@@ -1,9 +1,6 @@
 from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
-from core.models import (
-    Address, Upload, Option, Spec, Brand, Category, Wishlist, Item, ItemImage, Order, OrderItem, Coupon, Variation, ItemVariation,
-    Payment, Variation, CategorySpec, ItemSpec, Slider, ItemOption, Province,City, Article, Seo, Setting, Page, Menu, Tag, UploadFile,
-)
+from core.models import *
 from jalali_date import datetime2jalali, date2jalali
 import json
 
@@ -420,4 +417,15 @@ class MenuSerializer(serializers.ModelSerializer):
             'url',
             'display',
             'order'
+        )
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = (
+            'id',
+            'status',
+            'credit_based_user',
+            'credit',
+            'credit_confirmed'
         )

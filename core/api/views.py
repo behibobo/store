@@ -657,7 +657,7 @@ class CompareList(APIView):
             last_item = Item.objects.get(pk=ids[-1])
             last_category = Category.objects.get(pk=last_item.category_id)
             lid = last_category.get_top_most_parent()
-            print(fid, lid)
+
             if fid == lid:
                 res = True
             else:
@@ -671,5 +671,13 @@ class CompareListItems(APIView):
     def post(self, request, *args, **kwargs):
         ids = request.data.get('item_ids', None)
         items = Item.objects.filter(pk__in=ids)
+        serializer = SingleItemSerializer(items, many=True)
+        return Response(serializer.data)
+
+
+class Breadcrump(APIView):
+    def get(self, request,pk, *args, **kwargs):
+        category = Category.objects.filter(pk=pk)
+        ids = category.get_top_most_parent()
         serializer = SingleItemSerializer(items, many=True)
         return Response(serializer.data)

@@ -23,62 +23,8 @@ import csv
 import os
 from home.settings.base import BASE_DIR
 
-from .serializers import (
-    ItemSerializer,
-    CategorySerializer,
-    SingleCategorySerializer,
-    UploadSerializer,
-    UploadFileSerializer,
-    BrandSerializer,
-    ItemImagesSerializer,
-    ItemImageSerializer,
-    OptionSerializer,
-    SpecSerializer,
-    VariationSerializer,
-    CategorySerializer,
-    CategorySpecSerializer,
-    ItemSpecSerializer,
-    SliderSerializer,
-    ItemOptionSerializer,
-    ArticleSerializer,
-    SeoSerializer,
-    PageSerializer,
-    SettingSerializer,
-    MenuSerializer,
-    TagSerializer,
-)
-from core.models import (
-    Item,
-    CategorySpec,
-    ItemSpec,
-    Article,
-    Brand,
-    Spec,
-    Variation,
-    ItemImage,
-    Upload,
-    Category,
-    OrderItem,
-    Option,
-    Order,
-    Address,
-    Payment,
-    Coupon,
-    Refund,
-    UserProfile,
-    Variation,
-    ItemVariation,
-    Slider,
-    ItemOption,
-    Province,
-    City,
-    Seo,
-    Page,
-    Setting,
-    Menu,
-    Tag,
-    UploadFile,
-    )
+from .serializers import *
+from core.models import *
 
 
 # class ImportCities(APIView):
@@ -1060,3 +1006,9 @@ class TagList(APIView):
         tags = Tag.objects.filter(name__startswith=keyword).distinct("name")
         data = [tag.name for tag in tags]
         return JsonResponse(data, safe=False)
+
+class UserList(APIView):
+    def get(self, request, format=None):
+        users = UserProfile.objects.all()
+        serializer = MenuSerializer(users, many=True)
+        return Response(serializer.data)
