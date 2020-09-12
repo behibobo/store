@@ -11,6 +11,7 @@ from rest_framework.generics import (
     UpdateAPIView, DestroyAPIView
 )
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User, Group
 
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
@@ -1009,6 +1010,6 @@ class TagList(APIView):
 
 class UserList(APIView):
     def get(self, request, format=None):
-        users = UserProfile.objects.all()
-        serializer = MenuSerializer(users, many=True)
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data)

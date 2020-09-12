@@ -3,6 +3,8 @@ from rest_framework import serializers
 from core.models import *
 from jalali_date import datetime2jalali, date2jalali
 import json
+from django.contrib.auth.models import User, Group
+
 
 class UploadSerializer(serializers.ModelSerializer):
     thumbnail = serializers.ImageField(read_only=True)
@@ -419,7 +421,8 @@ class MenuSerializer(serializers.ModelSerializer):
             'order'
         )
 
-class UserSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = UserProfile
         fields = (
@@ -429,3 +432,13 @@ class UserSerializer(serializers.ModelSerializer):
             'credit',
             'credit_confirmed'
         )
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'profile']
+
+    def get_profile(self, obj):
+        profile = UserProfile.objects.get(user_id=obj.id)
+        return ProfileSerializer(profile).data
