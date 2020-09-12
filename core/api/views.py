@@ -57,13 +57,14 @@ class UserList(APIView):
     def post(self, request, *args, **kwargs):
         username = request.data['username']
         password = request.data['password']
+        credit_based_user = request.data['credit_based_user']
         if User.objects.filter(username=username).exists():
             return Response({"message": "username already taken"}, status=HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(username=username, is_staff=False,
                                     password=password)
         user.save()
-        user_profile = UserProfile.objects.get(user__id=user.pk)
+        user_profile = UserProfile.objects.get(user__id=user.pk, credit_based_user=credit_based_user)
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,

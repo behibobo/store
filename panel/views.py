@@ -978,8 +978,8 @@ class MenuDetail(APIView):
 
     def get_object(self, pk):
         try:
-            return Page.objects.get(pk=pk)
-        except Page.DoesNotExist:
+            return Menu.objects.get(pk=pk)
+        except Menu.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
