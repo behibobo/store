@@ -14,7 +14,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User, Group
 
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-
+from django.utils import safestring
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -991,7 +991,9 @@ class MenuDetail(APIView):
     def put(self, request, pk, format=None):
         menu = self.get_object(pk)
         serializer = MenuSerializer(menu, data=request.data)
+        print(request.data)
         if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

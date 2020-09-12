@@ -353,7 +353,7 @@ class Page(models.Model):
 
 class Menu(models.Model):
     name = models.CharField(max_length=300, blank=True, null=True)
-    url = models.URLField(blank=True, null=True)
+    url = models.CharField(max_length=300, blank=True, null=True)
     display = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
 
