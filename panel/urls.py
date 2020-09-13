@@ -40,4 +40,5 @@ urlpatterns = [
     path('menus/', MenuList.as_view(), name='admin-menus'),
     path('menus/<int:pk>/', MenuDetail.as_view(), name='admin-menu-get'),
     path('users/', UserList.as_view(), name='admin-users-get'),
+    path('users/<int:pk>/credit/', CreditUserList.as_view(), name='admin-credit-users-get'),
 ]

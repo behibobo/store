@@ -1015,3 +1015,17 @@ class UserList(APIView):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
+
+class CreditUserList(APIView):
+    def post(self, request, pk, format=None):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+        credit_user = request.data.get('credit_user', False)
+        profile = UserProfile.objects.get(user_id=user.id)
+        profile.credit_based_user = credit_user
+        profile.save()
+        return Response(status=status.HTTP_201_CREATED)
+
