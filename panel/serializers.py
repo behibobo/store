@@ -5,7 +5,6 @@ from jalali_date import datetime2jalali, date2jalali
 import json
 from django.contrib.auth.models import User, Group
 
-
 class UploadSerializer(serializers.ModelSerializer):
     thumbnail = serializers.ImageField(read_only=True)
     class Meta:
@@ -421,6 +420,7 @@ class MenuSerializer(serializers.ModelSerializer):
             'order'
         )
 
+
 class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -433,12 +433,94 @@ class ProfileSerializer(serializers.ModelSerializer):
             'credit_confirmed'
         )
 
+class CartItemSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField(read_only=True)
+    category_id = serializers.IntegerField()
+    brand_id = serializers.IntegerField()
+    class Meta:
+        model = Item
+        fields = (
+            'id',
+            'name',
+            'category',
+            'category_id',
+            'brand',
+            'brand_id',
+            'slug',
+            'description',
+            'image',
+        )
+
+    def get_category(self, obj):
+        return SingleCategorySerializer(obj.category).data
+
+    def get_brand(self, obj):
+        return BrandSerializer(obj.brand).data
+
+    def get_image(self, obj):
+        return ItemImageSerializer(obj.images.order_by('order').first()).data
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    variation = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
+    final_price = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrderItem
+        fields = (
+            'id',
+            'variation',
+            'item',
+            'quantity',
+            'final_price'
+        )
+
+    def get_item(self, obj):
+        return ItemSerializer(obj.item).data
+
+    def get_variation(self, obj):
+        return VariationSerializer(obj.variation).data
+    
+    def get_item(self, obj):
+        return CartItemSerializer(obj.variation.item).data
+
+    def get_final_price(self, obj):
+        return obj.get_final_price()
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_items = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = (
+            'id',
+            'order_items',
+            'total',
+        )
+
+    def get_order_items(self, obj):
+        return OrderItemSerializer(obj.order_items.all(), many=True).data
+
+    def get_total(self, obj):
+        return obj.get_total()
+
+
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
+    orders = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'username', 'profile']
+        fields = ['id', 'username', 'profile', 'orders']
 
     def get_profile(self, obj):
         profile = UserProfile.objects.get(user_id=obj.id)
         return ProfileSerializer(profile).data
+
+    def get_orders(self, obj):
+        orders = Order.objects.filter(user_id=obj.id)
+        return OrderSerializer(orders, many=True).data
