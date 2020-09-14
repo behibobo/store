@@ -258,6 +258,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'seo',
             'tags',
             'doc',
+            'out_of_stock_sale',
         )
 
     def get_category(self, obj):
@@ -475,7 +476,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'variation',
             'item',
             'quantity',
-            'final_price'
+            'final_price',
         )
 
     def get_item(self, obj):

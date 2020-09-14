@@ -135,6 +135,7 @@ class Item(models.Model):
     doc = models.CharField(max_length=300, blank=True, null=True,)
     description = models.TextField(blank=True, null=True,)
     created_at = models.DateTimeField(auto_now_add=True)
+    out_of_stock_sale = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

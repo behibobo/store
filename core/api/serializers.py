@@ -124,6 +124,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'image',
             'variation',
             'wishlist',
+            'out_of_stock_sale',
             'specs',
             'doc'
 
@@ -250,6 +251,7 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'specs',
             'seo',
             'tags',
+            'out_of_stock_sale',
             'doc'
         )
 
