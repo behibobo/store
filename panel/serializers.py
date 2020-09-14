@@ -5,6 +5,39 @@ from jalali_date import datetime2jalali, date2jalali
 import json
 from django.contrib.auth.models import User, Group
 
+
+class AddressSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField()
+    city_id = serializers.IntegerField()
+    province_id = serializers.SerializerMethodField()
+    city_name = serializers.SerializerMethodField()
+    province_name = serializers.SerializerMethodField()
+    class Meta:
+        model = Address
+        fields = (
+            'id',
+            'user_id',
+            'address',
+            'city_id',
+            'province_id',
+            'zip',
+            'name',
+            'mobile',
+            'default',
+            'city_name',
+            'province_name',
+        )
+    
+    def get_province_name(self, obj):
+        return obj.city.province.name
+    
+    def get_city_name(self, obj):
+        return obj.city.name
+
+    def get_province_id(self, obj):
+        return obj.city.province.id
+
+
 class UploadSerializer(serializers.ModelSerializer):
     thumbnail = serializers.ImageField(read_only=True)
     class Meta:
@@ -511,6 +544,26 @@ class OrderSerializer(serializers.ModelSerializer):
         return obj.get_total()
 
 
+class SingleUserSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
+    orders = serializers.SerializerMethodField()
+    addresses = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'profile', 'orders', 'addresses']
+
+    def get_profile(self, obj):
+        profile = UserProfile.objects.get(user_id=obj.id)
+        return ProfileSerializer(profile).data
+
+    def get_orders(self, obj):
+        orders = Order.objects.filter(user_id=obj.id)
+        return OrderSerializer(orders, many=True).data
+
+    def get_addresses(self, obj):
+        addresses = Address.objects.filter(user_id=obj.id)
+        return AddressSerializer(addresses, many=True).data
+
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
     orders = serializers.SerializerMethodField()
@@ -524,4 +577,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_orders(self, obj):
         orders = Order.objects.filter(user_id=obj.id)
-        return OrderSerializer(orders, many=True).data
+        return len(orders)

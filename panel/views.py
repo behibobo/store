@@ -1016,6 +1016,20 @@ class UserList(APIView):
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
+class UserDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        user = self.get_object(pk)
+        serializer = SingleUserSerializer(user)
+        return Response(serializer.data)
+
+
 class CreditUserList(APIView):
     def post(self, request, pk, format=None):
         try:
