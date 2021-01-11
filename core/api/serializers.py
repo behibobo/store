@@ -225,6 +225,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class SingleItemSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
+    root_category = serializers.SerializerMethodField()
     brand = serializers.SerializerMethodField()
     wishlist = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField(read_only=True)
@@ -240,6 +241,7 @@ class SingleItemSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'category',
+            'root_category',
             'category_id',
             'brand',
             'brand_id',
@@ -257,6 +259,18 @@ class SingleItemSerializer(serializers.ModelSerializer):
 
     def get_category(self, obj):
         return SingleCategorySerializer(obj.category).data
+
+    def get_root_category(self, obj):
+        has_parent = True
+        cid = 0
+        category = obj.category
+        while has_parent:
+            if category.parent is not None:
+                category = Category.objects.get(pk=category.parent_id)
+            else:
+                has_parent = False
+                cid = category.id
+        return SingleCategorySerializer(category).data
 
     def get_specs(self, obj):
         return ItemSpecSerializer(ItemSpec.objects.filter(item_id = obj.id), many=True).data
